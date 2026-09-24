@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- `games/iron-assault/`: 钢铁突击 (Iron Assault), a browser run-and-gun game with five
+  missions, a boss rush mode, four difficulty levels, synthesized sound and music,
+  and keyboard, gamepad and touch controls.
+
 ## [0.1.0] - 2026-09-24
 
 ### Added

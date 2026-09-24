@@ -9,6 +9,23 @@
 
 A small Python toolkit for analyzing and transforming text, usable as a library or from the command line.
 
+## Iron Assault (钢铁突击)
+
+`games/iron-assault/` holds a browser run-and-gun game in the style of classic arcade
+side-scrollers. Open `games/iron-assault/index.html` in a browser; nothing needs to be
+built or installed. Graphics are painted procedurally on a canvas, and all sound effects,
+music and announcer lines are generated in the browser (Web Audio + Speech Synthesis).
+
+- **5 missions + Boss Rush**: jungle, desert ruins, snowy peak, a ruined city at night
+  and the enemy HQ. Each has its own scenery, weather, music and boss (heavy tank,
+  mechanical scorpion, gunship, bipedal mech, fortress).
+- **4 difficulty levels** (新兵 / 老兵 / 精英 / 地狱) that change lives, health, enemy
+  fire rate, bullet speed, enemy density, boss health and score multiplier.
+- **Weapons**: pistol, heavy machine gun, homing rockets, flame shot, shotgun, laser,
+  grenades and a melee knife. Rescue prisoners for supplies.
+- **Controls**: keyboard (arrows/WASD, J fire, K jump, L grenade, P pause), gamepad,
+  and on-screen touch controls on phones.
+
 ## Installation
 
 ```bash
@@ -60,6 +77,7 @@ top_words("a b a c a", n=1)          # [("a", 3)]
 ├── tests/              # pytest test suite
 ├── .github/            # CI workflow, issue and PR templates
 ├── assets/             # Images, including the animated crocodile SVG
+├── games/iron-assault/ # Browser run-and-gun game (HTML5 canvas, no build step)
 ├── pyproject.toml      # Package metadata and tool config
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
