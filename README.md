@@ -3,6 +3,10 @@
 [![CI](https://github.com/lelegaga/test/actions/workflows/ci.yml/badge.svg)](https://github.com/lelegaga/test/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+<p align="center">
+  <img src="assets/crocodile-bike.svg" alt="An animated crocodile riding a bicycle" width="640">
+</p>
+
 A small Python toolkit for analyzing and transforming text, usable as a library or from the command line.
 
 ## Installation
@@ -55,6 +59,7 @@ top_words("a b a c a", n=1)          # [("a", 3)]
 │   └── cli.py          # Command-line interface
 ├── tests/              # pytest test suite
 ├── .github/            # CI workflow, issue and PR templates
+├── assets/             # Images, including the animated crocodile SVG
 ├── pyproject.toml      # Package metadata and tool config
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
