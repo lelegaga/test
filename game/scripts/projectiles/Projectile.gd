@@ -120,6 +120,9 @@ func take_hit(info: Dictionary) -> int:
 	if info.get("kind", "") == "explosion" and info.get("source") == self:
 		return Combat.HIT_NONE
 	GameManager.add_score(50)
+	# shot down: detonates harmlessly for the player
+	team = Combat.Team.NEUTRAL
+	damage = 2.0
 	_impact(global_position, Vector2.ZERO)
 	return Combat.HIT_OK
 

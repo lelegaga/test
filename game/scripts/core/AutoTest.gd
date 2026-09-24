@@ -28,6 +28,8 @@ var _slow_frames := 0
 var _frame_ms_total := 0.0
 var _args: PackedStringArray
 var _limit := 900.0
+var _cont_frames := 0
+var _lives_seen := 3
 var _proc_ms := 0.0
 var _prev_us := 0
 var _start_us := Time.get_ticks_usec()
@@ -38,6 +40,7 @@ var _last_score := 0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	process_priority = -1000   # run before Main so injected presses are "just pressed"
 	print("[autotest] boot took %.2fs" % (Time.get_ticks_msec() / 1000.0))
 	_args = OS.get_cmdline_user_args()
 	for a in _args:
@@ -97,6 +100,12 @@ func _process(delta: float) -> void:
 				GameManager.god_mode = "--god" in _args
 				print("[autotest] game started god=%s" % GameManager.god_mode)
 		1:
+			if GameManager.player and GameManager.player.last_death != "":
+				print("[autotest] died at x=%d: %s" % [GameManager.player.global_position.x, GameManager.player.last_death])
+				GameManager.player.last_death = ""
+			if "--stress" in _args:
+				_stress(delta)
+				return
 			_bot(delta)
 			_stats()
 			if GameManager.state == GameManager.State.CLEAR:
@@ -114,11 +123,58 @@ func _process(delta: float) -> void:
 			if t > 0.0:
 				get_tree().quit()
 		3:
-			# press continue once, then keep playing
+			# hold "continue" for a few frames, then keep playing
+			_cont_frames += 1
 			Input.action_press("start")
-			await get_tree().process_frame
-			Input.action_release("start")
-			phase = 1
+			if _cont_frames > 3:
+				Input.action_release("start")
+				_cont_frames = 0
+				if GameManager.state == GameManager.State.PLAYING:
+					phase = 1
+
+
+## Performance scenario: 40+ soldiers, gunships, constant fire, explosions.
+var _stress_t := 0.0
+var _stress_frames := 0
+var _stress_start := 0
+
+
+func _stress(delta: float) -> void:
+	_stress_t += delta
+	var lvl: Level = GameManager.level
+	var p: Player = GameManager.player
+	if _stress_t < 0.1:
+		return
+	if _stress_frames == 0:
+		p.set_weapon(MachineGun.new())
+		p.weapon.ammo = 99999
+		for i in 40:
+			var x := p.global_position.x + 120.0 + (i % 20) * 24.0
+			var e := lvl.spawn_enemy("soldier" if i % 4 else "shield", Vector2(x, 280.0 - (i / 20) * 40.0), {"enter_mode": "none", "facing": -1.0})
+		lvl.spawn_enemy("heli", Vector2(p.global_position.x + 300.0, 60.0), {})
+		lvl.spawn_enemy("heli", Vector2(p.global_position.x + 100.0, 50.0), {})
+		_stress_start = Time.get_ticks_usec()
+	_stress_frames += 1
+	# saturate the screen with bullets from both sides
+	for i in 4:
+		var y := randf_range(150.0, 290.0)
+		Projectile.shoot(Projectile.Kind.ENEMY_BULLET, Vector2(CameraManager.right() - 10.0, y), Vector2(-180.0, randf_range(-20, 20)), Combat.Team.ENEMY, 1.0)
+	_press("fire", true)
+	_press("up", int(_stress_t) % 3 == 1)
+	if _stress_frames % 40 == 0:
+		FX.boom(p.global_position + Vector2(randf_range(80, 400), -20), 50.0, 3.0, Combat.Team.PLAYER)
+	# keep the crowd topped up at 40
+	var n := get_tree().get_nodes_in_group("enemies").size()
+	if n < 40 and _stress_frames % 10 == 0:
+		lvl.spawn_enemy("soldier", Vector2(CameraManager.right() - 40.0, 200.0), {"enter_mode": "drop", "facing": -1.0})
+	_stats()
+	if _stress_frames % 120 == 0:
+		var us := Time.get_ticks_usec() - _stress_start
+		print("[stress] frames=%d enemies=%d bullets=%d particles=%d avg %.2f ms/frame" % [_stress_frames, n,
+			ObjectPool.active(Projectile.POOL_KEY), FX.front.count() + FX.back.count(), us / 1000.0 / _stress_frames])
+	if _stress_frames >= 1200:
+		_report("STRESS DONE")
+		get_tree().quit()
 
 
 func _stats() -> void:

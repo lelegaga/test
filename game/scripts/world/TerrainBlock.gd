@@ -27,7 +27,6 @@ func _ready() -> void:
 	_shape.position = Vector2(size.x * 0.5, 4.0) if one_way else size * 0.5
 	_shape.one_way_collision = one_way
 	add_child(_shape)
-	z_index = -5
 
 
 func remove_collision() -> void:

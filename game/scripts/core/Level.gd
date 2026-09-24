@@ -33,6 +33,7 @@ const ENEMY_SCRIPTS := {
 	"turret": "res://scripts/enemies/Turret.gd",
 	"car": "res://scripts/enemies/ArmoredCar.gd",
 	"heli": "res://scripts/enemies/Helicopter.gd",
+	"truck": "res://scripts/enemies/Truck.gd",
 }
 
 

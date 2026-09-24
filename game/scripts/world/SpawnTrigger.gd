@@ -27,6 +27,10 @@ var done := false
 var spawned: Array = []
 
 
+func _ready() -> void:
+	add_to_group("triggers")
+
+
 func _physics_process(_delta: float) -> void:
 	if fired:
 		return

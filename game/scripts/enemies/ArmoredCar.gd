@@ -144,3 +144,8 @@ func _update_dead(delta: float) -> void:
 		FX.smoke(global_position + Vector2(randf_range(-30, 30), -36), 1, 5.0)
 	if randf() < 0.1:
 		FX.fire(global_position + Vector2(randf_range(-30, 30), -30), 1, 4.0)
+	# burnt-out wreck lingers, then blinks away
+	if _dead_t > 8.0:
+		visual.visible = int(_dead_t * 12.0) % 2 == 0
+	if _dead_t > 9.0 or global_position.x < CameraManager.left() - 150.0:
+		queue_free()

@@ -30,6 +30,7 @@ var crouching := false
 var aim_target := 0.0    # facing-local aim angle: 0 forward, -PI/2 up, PI/2 down
 var aim_cur := 0.0
 var vehicle: Node2D = null
+var last_death := ""        # debug: what killed us last
 
 var _coyote := 0.0
 var _jump_buf := 0.0
@@ -399,6 +400,10 @@ func die(info: Dictionary) -> void:
 		return
 	state = St.DEAD
 	_dead_t = 0.0
+	var src = info.get("source")
+	last_death = "%s by %s" % [info.get("kind", "?"), (src.get_script().get_global_name() if src != null and is_instance_valid(src) and src.get_script() else "?")]
+	if src is Projectile:
+		last_death += "(%s)" % Projectile.Kind.keys()[src.kind]
 	_set_crouch(false)
 	var kind: String = info.get("kind", "")
 	var d: Vector2 = info.get("dir", Vector2(-facing, 0))

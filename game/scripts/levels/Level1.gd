@@ -167,6 +167,7 @@ func _build_outpost() -> void:
 		{"spawn": "turret", "at": "abs", "x": 2815, "y": 252, "enter": "none"},
 	], {"lock_camera": true, "lock_x": 2600})
 	trigger(2950, [
+		{"spawn": "truck", "dx": 40},
 		{"spawn": "charger", "count": 2, "gap": 0.5},
 		{"spawn": "soldier", "at": "left", "count": 2, "gap": 0.6},
 	])
@@ -302,7 +303,8 @@ func _build_base() -> void:
 	prop("hedgehog", 8520)
 
 	trigger(6460, [
-		{"spawn": "soldier", "count": 3, "gap": 0.4},
+		{"spawn": "truck", "dx": 60, "params": {"troops": 5}},
+		{"spawn": "soldier", "count": 2, "gap": 0.4},
 		{"spawn": "shield", "dx": 40},
 	])
 	trigger(6900, [
@@ -371,6 +373,8 @@ func _build_airfield() -> void:
 		{"spawn": "rocket", "count": 2, "gap": 0.8, "dx": 40},
 		{"spawn": "charger", "at": "left", "count": 2, "gap": 0.4},
 		{"wait_clear": true},
+		{"spawn": "truck", "params": {"troops": 5, "troop_type": "charger"}},
+		{"wait": 2.0},
 		{"spawn": "car"},
 		{"spawn": "soldier", "count": 3, "gap": 0.4, "dx": 80},
 	], {"lock_camera": true, "lock_x": 9700})
@@ -378,6 +382,7 @@ func _build_airfield() -> void:
 
 # ------------------------------------------------------------------ G. boss
 func _build_boss_arena() -> void:
+	g(10240, 11400, 300, "concrete")
 	deco("wall_segment", 10870)
 	deco("wall_segment", 10840)
 	deco("building", 10990)

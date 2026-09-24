@@ -24,7 +24,7 @@ func _init() -> void:
 func _on_ready() -> void:
 	if state != "drop":
 		set_state("enter" if enter_mode == "walk" else "patrol")
-	burst = randi_range(1, 3)
+	burst = randi_range(1, 2)
 	_enter_extra = randf_range(0.0, 120.0)
 	speed *= randf_range(0.9, 1.15)
 
@@ -57,7 +57,7 @@ func _think(delta: float) -> void:
 			stop(delta)
 			face_target()
 			aim_at_target()
-			if state_t > 0.35:
+			if state_t > 0.5:
 				_choose()
 		"shoot":
 			stop(delta)
@@ -66,9 +66,9 @@ func _think(delta: float) -> void:
 			_shot_t -= delta
 			if _shot_t <= 0.0 and _shots_left > 0 and on_screen() and GameManager.target_alive():
 				_shots_left -= 1
-				_shot_t = 0.22
-				shoot(Projectile.Kind.ENEMY_BULLET, 175.0, 1.0, 0.04)
-			if _shots_left <= 0 and _shot_t <= -0.35:
+				_shot_t = 0.3
+				shoot(Projectile.Kind.ENEMY_BULLET, 155.0, 1.0, 0.04)
+			if _shots_left <= 0 and _shot_t <= -0.7:
 				_choose()
 		"grenade":
 			stop(delta)
@@ -113,9 +113,9 @@ func _choose() -> void:
 	if grenadier and r < 0.18 and dist > 80.0 and dist < 260.0:
 		_shots_left = 1
 		set_state("grenade")
-	elif r < 0.75:
+	elif r < 0.68:
 		_shots_left = burst
-		_shot_t = randf_range(0.15, 0.35)
+		_shot_t = randf_range(0.3, 0.5)
 		_crouch = randf() < 0.35
 		set_state("shoot")
 	else:

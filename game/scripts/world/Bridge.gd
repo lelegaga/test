@@ -67,8 +67,14 @@ func collapse_chase(from_x: float, to_x: float, speed: float) -> void:
 func _blow(s: Array) -> void:
 	if not s[1]:
 		return
-	s[1] = false
 	var b: TerrainBlock = s[0]
+	# The collapse chases the player but never overtakes them: segments at or
+	# ahead of the player (or their tank) wait until they've moved on.
+	var t := GameManager.get_target()
+	if t != null and b.position.x + b.size.x > t.global_position.x - 36.0:
+		get_tree().create_timer(0.25, false).timeout.connect(_blow.bind(s))
+		return
+	s[1] = false
 	b.remove_collision()
 	var c := b.position + Vector2(b.size.x * 0.5, 4)
 	FX.boom(c, 36.0, 0.0, Combat.Team.NEUTRAL, null, 0.3)

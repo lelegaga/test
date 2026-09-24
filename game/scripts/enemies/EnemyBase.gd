@@ -340,6 +340,8 @@ func die(info: Dictionary) -> void:
 			body.texture = frames["burnt"]
 		"melee":
 			velocity = Vector2(sx * 160.0, -160.0)
+			CameraShakeManager.hit_stop(0.05)
+			CameraShakeManager.shake(0.15)
 		"water":
 			velocity = Vector2(0, 60)
 		_:

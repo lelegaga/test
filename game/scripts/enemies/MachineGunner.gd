@@ -53,7 +53,7 @@ func _think(delta: float) -> void:
 			_laser.points = PackedVector2Array([muzzle_pos(), muzzle_pos() + Vector2.from_angle(world_angle(aim)) * 500.0])
 			if state_t > 0.6:
 				_laser.visible = false
-				_burst_left = 12
+				_burst_left = 10
 				_sweep_from = aim - 0.25
 				_sweep_to = aim + 0.2
 				set_state("burst")
@@ -63,7 +63,7 @@ func _think(delta: float) -> void:
 			if _shot_t <= 0.0 and _burst_left > 0:
 				_burst_left -= 1
 				_shot_t = 0.09
-				shoot(Projectile.Kind.ENEMY_BULLET, 210.0, 1.0, 0.02)
+				shoot(Projectile.Kind.ENEMY_BULLET, 185.0, 1.0, 0.02)
 				FX.shell(muzzle_pos(), facing)
 			if _burst_left <= 0:
 				set_state("idle")

@@ -17,6 +17,7 @@ var _lock_center := Vector2.ZERO
 var _min_center_x := 0.0      # the camera never scrolls left of this
 var _look := 0.0
 var _center := Vector2.ZERO
+var _ref_y := 300.0     # last grounded height of the target
 
 
 func setup(cam: Camera2D, follow: Node2D, min_x: float, max_x: float) -> void:
@@ -28,6 +29,7 @@ func setup(cam: Camera2D, follow: Node2D, min_x: float, max_x: float) -> void:
 	_look = LOOK_AHEAD
 	_center = Vector2(maxf(follow.global_position.x, min_x + VIEW.x * 0.5), level_bottom - VIEW.y * 0.5)
 	_min_center_x = _center.x
+	_ref_y = follow.global_position.y
 	camera.global_position = _center
 	CameraShakeManager.reset()
 
@@ -88,8 +90,13 @@ func _physics_process(delta: float) -> void:
 		var x := lerpf(_center.x, want_x, 1.0 - exp(-8.0 * delta))
 		x = maxf(x, _min_center_x)
 		_min_center_x = x
-		# Vertical: rest on the level floor, rise when the player climbs high.
-		var want_y := minf(level_bottom - VIEW.y * 0.5, target.global_position.y - 30.0)
+		# Vertical: follow the last height the target stood on (so jumps and
+		# drop-in respawns don't swing the view), but always follow falls.
+		var ty := target.global_position.y
+		var grounded: bool = target.is_on_floor() if target is CharacterBody2D else true
+		if grounded or ty > _ref_y:
+			_ref_y = ty
+		var want_y := minf(level_bottom - VIEW.y * 0.5, _ref_y - 40.0)
 		want_y = maxf(want_y, level_top + VIEW.y * 0.5)
 		var y := lerpf(_center.y, want_y, 1.0 - exp(-4.0 * delta))
 		_center = Vector2(x, y)
