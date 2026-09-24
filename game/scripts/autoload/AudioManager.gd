@@ -37,6 +37,19 @@ func _ready() -> void:
 	_build_sfx()
 
 
+func _exit_tree() -> void:
+	# release generated streams so nothing is left alive at shutdown
+	for p in _players:
+		p.stop()
+		p.stream = null
+	for k in _loops:
+		_loops[k].stop()
+		_loops[k].stream = null
+	_music.stop()
+	_music.stream = null
+	_streams.clear()
+
+
 func play(name: String, pitch_var: float = 0.05, vol_db: float = 0.0) -> void:
 	if not _streams.has(name):
 		return

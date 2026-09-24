@@ -29,6 +29,7 @@ var _frame_ms_total := 0.0
 var _args: PackedStringArray
 var _limit := 900.0
 var _cont_frames := 0
+var _exit_code := 0
 var _lives_seen := 3
 var _proc_ms := 0.0
 var _prev_us := 0
@@ -118,10 +119,11 @@ func _process(delta: float) -> void:
 				phase = 3
 			elif t > _limit:
 				_report("TIMEOUT")
+				_exit_code = 1
 				phase = 2
 		2:
 			if t > 0.0:
-				get_tree().quit()
+				get_tree().quit(_exit_code)
 		3:
 			# hold "continue" for a few frames, then keep playing
 			_cont_frames += 1

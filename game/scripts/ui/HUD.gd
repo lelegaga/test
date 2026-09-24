@@ -166,7 +166,7 @@ func _draw_controls(y: float) -> void:
 		"A/D MOVE   S CROUCH   SPACE JUMP   W/S AIM",
 		"J / LMB FIRE   K / RMB GRENADE   E ENTER TANK",
 		"TANK: J VULCAN  K CANNON  SPACE HOP  E EXIT",
-		"F1 HP MODE  F2 GOD  F3 DEBUG  F11 FULLSCREEN",
+		"F1 HP MODE  F2 GOD  F3 DEBUG  F10 SCALE  F11 FULL",
 	]
 	for i in lines.size():
 		PixelFont.draw_centered(self, lines[i], Vector2(320, y + i * 13), 1, Color("c0c0c0"))

@@ -9,6 +9,10 @@
 
 A small Python toolkit for analyzing and transforming text, usable as a library or from the command line.
 
+> **Also in this repo:** [`game/`](game/README.md), *Iron Tide: Coastal
+> Assault*. It's a complete Godot 4 arcade run-and-gun demo with procedurally
+> generated pixel art and audio. Run it with `godot --path game`.
+
 ## Installation
 
 ```bash
@@ -60,6 +64,7 @@ top_words("a b a c a", n=1)          # [("a", 3)]
 ├── tests/              # pytest test suite
 ├── .github/            # CI workflow, issue and PR templates
 ├── assets/             # Images, including the animated crocodile SVG
+├── game/               # Godot 4 arcade shooter demo (see game/README.md)
 ├── pyproject.toml      # Package metadata and tool config
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md

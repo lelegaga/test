@@ -18,8 +18,9 @@ come in large numbers, and most things on screen can be blown up.
    ```
 
 The internal resolution is 640×360. The window scales it up by whole numbers
-(integer scaling), so pixels stay sharp up to 4K (6×). Press **F11** for
-fullscreen.
+(integer scaling), so pixels stay sharp up to 4K (6×). Press **F10** to
+cycle the window size through 1× to 6×, as far as your screen allows, or
+**F11** for fullscreen.
 
 ## Controls
 

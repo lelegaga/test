@@ -1,0 +1,35 @@
+name: Game smoke test
+
+on:
+  push:
+    branches: [main]
+    paths: ["game/**", ".github/workflows/game.yml"]
+  pull_request:
+    paths: ["game/**", ".github/workflows/game.yml"]
+
+jobs:
+  playthrough:
+    runs-on: ubuntu-latest
+    env:
+      GODOT_VERSION: "4.3"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Godot
+        run: |
+          curl -sSL -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip
+          mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" /usr/local/bin/godot
+      - name: Import project
+        run: godot --headless --path game --import
+      - name: Bot plays the whole mission
+        run: |
+          set -o pipefail
+          godot --headless --fixed-fps 60 --path game -- --autotest --god --limit=900 2>&1 | tee playthrough.log
+          grep -q "RESULT: LEVEL CLEAR" playthrough.log
+          ! grep -E "SCRIPT ERROR|Parse Error" playthrough.log
+      - name: Stress test (40+ enemies)
+        run: |
+          set -o pipefail
+          godot --headless --fixed-fps 60 --path game -- --autotest --stress --god 2>&1 | tee stress.log
+          grep -q "RESULT: STRESS DONE" stress.log
+          ! grep -E "SCRIPT ERROR|Parse Error" stress.log

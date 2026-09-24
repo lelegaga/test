@@ -113,6 +113,21 @@ func target_alive() -> bool:
 	return t != null and t.has_method("is_hittable") and t.is_hittable()
 
 
+## Cycles the window through whole-number multiples of 640x360
+## (1x ... 6x = 3840x2160 / 4K), limited to what fits on the screen.
+func _cycle_window_scale() -> void:
+	if DisplayServer.window_get_mode() != DisplayServer.WINDOW_MODE_WINDOWED:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	var screen := DisplayServer.screen_get_usable_rect().size
+	var max_k := clampi(mini(screen.x / 640, screen.y / 360), 1, 6)
+	var cur := DisplayServer.window_get_size().x / 640
+	var k := cur + 1 if cur < max_k else 1
+	var size := Vector2i(640 * k, 360 * k)
+	DisplayServer.window_set_size(size)
+	DisplayServer.window_set_position(DisplayServer.screen_get_position() + (screen - size) / 2)
+	show_message("WINDOW %dx  (%dx%d)" % [k, size.x, size.y], 1.2, false)
+
+
 # ----------------------------------------------------------------- input map
 func _add_action(action: String, keys: Array, mouse: int = 0, joy_buttons: Array = [], joy_axis: Array = []) -> void:
 	if not InputMap.has_action(action):
@@ -151,12 +166,15 @@ func _setup_input() -> void:
 	_add_action("debug_god", [KEY_F2])
 	_add_action("debug_info", [KEY_F3])
 	_add_action("fullscreen", [KEY_F11])
+	_add_action("window_scale", [KEY_F10])
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("fullscreen"):
 		var fs := DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if fs else DisplayServer.WINDOW_MODE_FULLSCREEN)
+	elif event.is_action_pressed("window_scale"):
+		_cycle_window_scale()
 	elif event.is_action_pressed("debug_hp"):
 		debug_hp_mode = not debug_hp_mode
 		show_message("DEBUG HP MODE " + ("ON" if debug_hp_mode else "OFF"), 1.5, false)
