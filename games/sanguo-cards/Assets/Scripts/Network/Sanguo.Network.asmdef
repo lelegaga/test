@@ -1,0 +1,16 @@
+{
+    "name": "Sanguo.Network",
+    "rootNamespace": "Sanguo.Network",
+    "references": [
+        "Sanguo.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

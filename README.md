@@ -26,6 +26,14 @@ music and announcer lines are generated in the browser (Web Audio + Speech Synth
 - **Controls**: keyboard (arrows/WASD, J fire, K jump, L grenade, P pause), gamepad,
   and on-screen touch controls on phones.
 
+## 三国身份卡牌对战 (Sanguo Cards)
+
+`games/sanguo-cards/` holds a Unity 6 project for a multiplayer Three Kingdoms identity card game
+(server-authoritative host, LAN play, identity and team modes, AI seats). The rules engine is plain
+C# and is built and tested without Unity from `games/sanguo-cards/DotNet`. See
+[games/sanguo-cards/README.md](games/sanguo-cards/README.md) and
+[docs/ARCHITECTURE.md](games/sanguo-cards/docs/ARCHITECTURE.md).
+
 ## Installation
 
 ```bash
@@ -78,6 +86,7 @@ top_words("a b a c a", n=1)          # [("a", 3)]
 ├── .github/            # CI workflow, issue and PR templates
 ├── assets/             # Images, including the animated crocodile SVG
 ├── games/iron-assault/ # Browser run-and-gun game (HTML5 canvas, no build step)
+├── games/sanguo-cards/ # Unity 6 multiplayer card game (C# rules engine + .NET test harness)
 ├── pyproject.toml      # Package metadata and tool config
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md

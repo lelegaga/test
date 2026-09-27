@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sanguo.Core", "Sanguo.Core\Sanguo.Core.csproj", "{B3FAD1DC-3880-47C5-A99F-606661D8BFCD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sanguo.Tests", "Sanguo.Tests\Sanguo.Tests.csproj", "{E05235FA-DD7B-4AD6-8DE8-CA17AB829935}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sanguo.Sim", "Sanguo.Sim\Sanguo.Sim.csproj", "{254A2180-DFDF-4298-9EDB-54E8D38AEB95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sanguo.Client", "Sanguo.Client\Sanguo.Client.csproj", "{0320312D-A053-4FD8-BD26-B2693A220A25}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sanguo.Network", "Sanguo.Network\Sanguo.Network.csproj", "{32783E82-8794-4AE4-8AC8-1DC2C4A5BD63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sanguo.Editor", "Sanguo.Editor\Sanguo.Editor.csproj", "{1326BF62-A8AD-488B-97D2-69779CFDC4A2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B3FAD1DC-3880-47C5-A99F-606661D8BFCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3FAD1DC-3880-47C5-A99F-606661D8BFCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3FAD1DC-3880-47C5-A99F-606661D8BFCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3FAD1DC-3880-47C5-A99F-606661D8BFCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E05235FA-DD7B-4AD6-8DE8-CA17AB829935}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E05235FA-DD7B-4AD6-8DE8-CA17AB829935}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E05235FA-DD7B-4AD6-8DE8-CA17AB829935}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E05235FA-DD7B-4AD6-8DE8-CA17AB829935}.Release|Any CPU.Build.0 = Release|Any CPU
+		{254A2180-DFDF-4298-9EDB-54E8D38AEB95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{254A2180-DFDF-4298-9EDB-54E8D38AEB95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{254A2180-DFDF-4298-9EDB-54E8D38AEB95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{254A2180-DFDF-4298-9EDB-54E8D38AEB95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0320312D-A053-4FD8-BD26-B2693A220A25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0320312D-A053-4FD8-BD26-B2693A220A25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0320312D-A053-4FD8-BD26-B2693A220A25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0320312D-A053-4FD8-BD26-B2693A220A25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32783E82-8794-4AE4-8AC8-1DC2C4A5BD63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32783E82-8794-4AE4-8AC8-1DC2C4A5BD63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32783E82-8794-4AE4-8AC8-1DC2C4A5BD63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32783E82-8794-4AE4-8AC8-1DC2C4A5BD63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1326BF62-A8AD-488B-97D2-69779CFDC4A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1326BF62-A8AD-488B-97D2-69779CFDC4A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1326BF62-A8AD-488B-97D2-69779CFDC4A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1326BF62-A8AD-488B-97D2-69779CFDC4A2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

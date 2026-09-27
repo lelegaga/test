@@ -1,0 +1,17 @@
+{
+    "name": "Sanguo.Client",
+    "rootNamespace": "Sanguo.App",
+    "references": [
+        "Sanguo.Core",
+        "Sanguo.Network"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,11 @@
+// Manifest-only Android library (no code). Unity adds .androidlib folders to the Gradle build.
+apply plugin: 'com.android.library'
+
+android {
+    namespace 'com.sanguo.network'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 23
+    }
+}

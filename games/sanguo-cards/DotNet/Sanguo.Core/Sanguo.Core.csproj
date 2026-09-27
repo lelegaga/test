@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Headless build of the engine-free game core. Compiles the same source files Unity compiles
+    into the Sanguo.Core assembly (Assets/Scripts/*, see Sanguo.Core.asmdef + .asmref files).
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>Sanguo.Core</AssemblyName>
+    <RootNamespace>Sanguo</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(UnityAssets)Scripts\Core\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\Events\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\Cards\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\Effects\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\Characters\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\Skills\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\GameModes\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\Game\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\AI\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\Data\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\Utils\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\Presentation\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\Save\**\*.cs" />
+  </ItemGroup>
+</Project>

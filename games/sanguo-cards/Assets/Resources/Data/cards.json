@@ -1,0 +1,429 @@
+{
+  "cards": [
+    {
+      "id": "strike",
+      "name": "攻击",
+      "type": "basic",
+      "icon": "icon_strike",
+      "description": "出牌阶段限一次，对攻击范围内的一名其他角色使用。目标需打出一张【闪避】，否则受到1点伤害。",
+      "target": {
+        "kind": "single",
+        "filters": [
+          "notSelf"
+        ]
+      },
+      "range": "attack",
+      "usageKey": "strike",
+      "usageLimit": 1,
+      "tags": [
+        "attack"
+      ],
+      "effects": [
+        {
+          "type": "RequireResponse",
+          "card": "dodge",
+          "onFail": [
+            {
+              "type": "Damage",
+              "amount": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dodge",
+      "name": "闪避",
+      "type": "basic",
+      "icon": "icon_dodge",
+      "activeUse": false,
+      "description": "当你成为【攻击】的目标或需要闪避时打出，抵消其效果。",
+      "target": {
+        "kind": "none"
+      },
+      "tags": [
+        "defense"
+      ],
+      "effects": []
+    },
+    {
+      "id": "heal",
+      "name": "治疗",
+      "type": "basic",
+      "icon": "icon_heal",
+      "description": "出牌阶段对受伤的自己使用，回复1点生命；或对濒死角色使用，令其回复1点生命。",
+      "target": {
+        "kind": "self",
+        "filters": [
+          "wounded"
+        ]
+      },
+      "tags": [
+        "heal"
+      ],
+      "effects": [
+        {
+          "type": "Heal",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "duel",
+      "name": "决斗",
+      "type": "trick",
+      "icon": "icon_duel",
+      "description": "对一名其他角色使用。由目标开始，双方轮流打出【攻击】，首先不打出者受到另一方造成的1点伤害。",
+      "target": {
+        "kind": "single",
+        "filters": [
+          "notSelf"
+        ]
+      },
+      "tags": [
+        "attack"
+      ],
+      "effects": [
+        {
+          "type": "Duel",
+          "card": "strike",
+          "damage": 1
+        }
+      ]
+    },
+    {
+      "id": "ambush",
+      "name": "伏兵四起",
+      "type": "trick",
+      "icon": "icon_ambush",
+      "description": "对所有其他角色使用。每名目标需打出一张【攻击】，否则受到1点伤害。",
+      "target": {
+        "kind": "allOthers"
+      },
+      "tags": [
+        "aoe",
+        "attack"
+      ],
+      "effects": [
+        {
+          "type": "RequireResponse",
+          "card": "strike",
+          "onFail": [
+            {
+              "type": "Damage",
+              "amount": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "arrow_volley",
+      "name": "箭雨齐射",
+      "type": "trick",
+      "icon": "icon_arrows",
+      "description": "对所有其他角色使用。每名目标需打出一张【闪避】，否则受到1点伤害。",
+      "target": {
+        "kind": "allOthers"
+      },
+      "tags": [
+        "aoe",
+        "attack"
+      ],
+      "effects": [
+        {
+          "type": "RequireResponse",
+          "card": "dodge",
+          "onFail": [
+            {
+              "type": "Damage",
+              "amount": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "supply",
+      "name": "粮草补给",
+      "type": "trick",
+      "icon": "icon_supply",
+      "description": "出牌阶段对自己使用，摸两张牌。",
+      "target": {
+        "kind": "self"
+      },
+      "tags": [
+        "draw"
+      ],
+      "effects": [
+        {
+          "type": "DrawCard",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "id": "sabotage",
+      "name": "釜底抽薪",
+      "type": "trick",
+      "icon": "icon_sabotage",
+      "description": "对区域内有牌的一名其他角色使用，你弃置其区域内的一张牌。",
+      "target": {
+        "kind": "single",
+        "filters": [
+          "notSelf",
+          "hasCards"
+        ]
+      },
+      "tags": [
+        "control"
+      ],
+      "effects": [
+        {
+          "type": "Discard",
+          "count": 1,
+          "chooser": "source",
+          "zones": [
+            "all"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seize",
+      "name": "巧夺",
+      "type": "trick",
+      "icon": "icon_seize",
+      "description": "对距离为1且区域内有牌的一名其他角色使用，你获得其区域内的一张牌。",
+      "target": {
+        "kind": "single",
+        "filters": [
+          "notSelf",
+          "hasCards"
+        ]
+      },
+      "range": {
+        "distance": 1
+      },
+      "tags": [
+        "control"
+      ],
+      "effects": [
+        {
+          "type": "StealCard",
+          "zones": [
+            "all"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "feast",
+      "name": "犒赏三军",
+      "type": "trick",
+      "icon": "icon_feast",
+      "description": "对所有受伤的角色使用，每名目标回复1点生命。",
+      "target": {
+        "kind": "all",
+        "filters": [
+          "wounded"
+        ]
+      },
+      "tags": [
+        "heal"
+      ],
+      "effects": [
+        {
+          "type": "Heal",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "confinement",
+      "name": "画地为牢",
+      "type": "trick",
+      "icon": "icon_confinement",
+      "delayed": true,
+      "description": "延时锦囊。置入一名其他角色的判定区；其判定阶段进行判定，若结果不为红桃，其跳过出牌阶段。",
+      "target": {
+        "kind": "single",
+        "filters": [
+          "notSelf",
+          "noSameDelayedTrick"
+        ]
+      },
+      "tags": [
+        "control"
+      ],
+      "judge": {
+        "successSuits": [
+          "heart"
+        ]
+      },
+      "judgeFail": [
+        {
+          "type": "SkipPhase",
+          "phase": "PlayPhase"
+        }
+      ],
+      "effects": [
+        {
+          "type": "DelayedTrick"
+        }
+      ]
+    },
+    {
+      "id": "long_spear",
+      "name": "长枪",
+      "type": "equipment",
+      "slot": "weapon",
+      "icon": "icon_spear",
+      "description": "武器，攻击范围3。",
+      "continuous": [
+        {
+          "type": "AttackRange",
+          "range": 3
+        }
+      ]
+    },
+    {
+      "id": "repeating_crossbow",
+      "name": "连射弩",
+      "type": "equipment",
+      "slot": "weapon",
+      "icon": "icon_crossbow",
+      "description": "武器，攻击范围1。出牌阶段你使用【攻击】无次数限制。",
+      "continuous": [
+        {
+          "type": "AttackRange",
+          "range": 1
+        },
+        {
+          "type": "UsageLimit",
+          "key": "strike",
+          "add": 99
+        }
+      ]
+    },
+    {
+      "id": "war_horse",
+      "name": "战马",
+      "type": "equipment",
+      "slot": "defensiveMount",
+      "icon": "icon_war_horse",
+      "description": "防御坐骑，其他角色计算与你的距离+1。",
+      "continuous": [
+        {
+          "type": "DistanceModifier",
+          "incoming": 1
+        }
+      ]
+    },
+    {
+      "id": "swift_horse",
+      "name": "快马",
+      "type": "equipment",
+      "slot": "offensiveMount",
+      "icon": "icon_swift_horse",
+      "description": "进攻坐骑，你计算与其他角色的距离-1。",
+      "continuous": [
+        {
+          "type": "DistanceModifier",
+          "outgoing": -1
+        }
+      ]
+    }
+  ],
+  "decks": [
+    {
+      "id": "standard",
+      "cards": [
+        ["strike", "spade", 1],
+        ["strike", "club", 2],
+        ["strike", "spade", 3],
+        ["strike", "club", 4],
+        ["strike", "diamond", 5],
+        ["strike", "heart", 6],
+        ["strike", "spade", 7],
+        ["strike", "club", 8],
+        ["strike", "spade", 9],
+        ["strike", "club", 10],
+        ["strike", "diamond", 11],
+        ["strike", "heart", 12],
+        ["strike", "spade", 13],
+        ["strike", "club", 1],
+        ["strike", "spade", 2],
+        ["strike", "club", 3],
+        ["strike", "diamond", 4],
+        ["strike", "heart", 5],
+        ["strike", "spade", 6],
+        ["strike", "club", 7],
+        ["strike", "spade", 8],
+        ["strike", "club", 9],
+        ["strike", "diamond", 10],
+        ["strike", "heart", 11],
+        ["strike", "spade", 12],
+        ["strike", "club", 13],
+        ["strike", "spade", 1],
+        ["strike", "club", 2],
+        ["strike", "diamond", 3],
+        ["strike", "heart", 4],
+        ["dodge", "heart", 5],
+        ["dodge", "diamond", 6],
+        ["dodge", "heart", 7],
+        ["dodge", "diamond", 8],
+        ["dodge", "heart", 9],
+        ["dodge", "diamond", 10],
+        ["dodge", "heart", 11],
+        ["dodge", "diamond", 12],
+        ["dodge", "heart", 13],
+        ["dodge", "diamond", 1],
+        ["dodge", "heart", 2],
+        ["dodge", "diamond", 3],
+        ["dodge", "heart", 4],
+        ["dodge", "diamond", 5],
+        ["dodge", "heart", 6],
+        ["heal", "heart", 7],
+        ["heal", "heart", 8],
+        ["heal", "heart", 9],
+        ["heal", "heart", 10],
+        ["heal", "heart", 11],
+        ["heal", "heart", 12],
+        ["heal", "heart", 13],
+        ["heal", "heart", 1],
+        ["duel", "spade", 2],
+        ["duel", "club", 3],
+        ["duel", "diamond", 4],
+        ["ambush", "spade", 5],
+        ["ambush", "club", 6],
+        ["ambush", "spade", 7],
+        ["arrow_volley", "heart", 8],
+        ["supply", "heart", 9],
+        ["supply", "heart", 10],
+        ["supply", "heart", 11],
+        ["supply", "heart", 12],
+        ["sabotage", "spade", 13],
+        ["sabotage", "club", 1],
+        ["sabotage", "heart", 2],
+        ["sabotage", "spade", 3],
+        ["sabotage", "club", 4],
+        ["seize", "spade", 5],
+        ["seize", "diamond", 6],
+        ["seize", "spade", 7],
+        ["seize", "diamond", 8],
+        ["feast", "heart", 9],
+        ["confinement", "spade", 10],
+        ["confinement", "club", 11],
+        ["confinement", "heart", 12],
+        ["long_spear", "diamond", 13],
+        ["repeating_crossbow", "club", 1],
+        ["repeating_crossbow", "diamond", 2],
+        ["war_horse", "spade", 3],
+        ["war_horse", "heart", 4],
+        ["swift_horse", "heart", 5],
+        ["swift_horse", "diamond", 6]
+      ]
+    }
+  ]
+}
