@@ -47,6 +47,18 @@ namespace Sanguo.Core
         public bool HasPrivateDetails;
         public List<int> Candidates;
         public List<string> Options;
+        /// <summary>Private: usable cards (play phase) or cards that may answer (responses).</summary>
+        public List<PlayHint> PlayHints;
+        /// <summary>Private: active skills usable now.</summary>
+        public List<SkillHint> SkillHints;
+
+        public PlayHint FindHint(int cardInstanceId, string skillId = null)
+        {
+            if (PlayHints == null) return null;
+            foreach (var h in PlayHints)
+                if (h.CardInstanceId == cardInstanceId && h.SkillId == skillId) return h;
+            return null;
+        }
 
         public RequestInfo PublicView()
         {
@@ -75,5 +87,29 @@ namespace Sanguo.Core
         {
             return Kind + "#" + RequestId + "(p" + PlayerId + (RequiredCardId != null ? "," + RequiredCardId : "") + ")";
         }
+    }
+
+    /// <summary>A card the player may use/play now, as <see cref="AsCardId"/> (through <see cref="SkillId"/> if converted).</summary>
+    public sealed class PlayHint
+    {
+        public int CardInstanceId;
+        public string AsCardId;
+        public string SkillId;
+        /// <summary>True when targets must be chosen (Min/Max/LegalTargets apply).</summary>
+        public bool NeedsTargets;
+        public int MinTargets;
+        public int MaxTargets;
+        public List<int> LegalTargets = new List<int>();
+    }
+
+    /// <summary>An active skill usable now.</summary>
+    public sealed class SkillHint
+    {
+        public string SkillId;
+        public int MinCards;
+        public int MaxCards;
+        public int MinTargets;
+        public int MaxTargets;
+        public List<int> LegalTargets = new List<int>();
     }
 }

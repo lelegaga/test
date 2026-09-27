@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Merged into the app manifest by Gradle. Permissions for LAN play:
+  - INTERNET / ACCESS_NETWORK_STATE: TCP game connection
+  - ACCESS_WIFI_STATE / CHANGE_WIFI_MULTICAST_STATE: UDP room discovery (MulticastLock)
+  All are normal permissions (granted at install, no runtime prompt).
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+</manifest>

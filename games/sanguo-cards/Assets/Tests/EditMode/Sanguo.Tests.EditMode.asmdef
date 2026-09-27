@@ -3,6 +3,8 @@
     "rootNamespace": "Sanguo.Tests",
     "references": [
         "Sanguo.Core",
+        "Sanguo.Network",
+        "Sanguo.Editor",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

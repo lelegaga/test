@@ -13,14 +13,19 @@
 | 2 | 最小可玩版本：AI 自动对局（摸牌、出牌、攻击、响应、掉血、濒死求救、死亡、换回合、胜负） | 完成 |
 | 3 | 身份模式（主公/忠臣/反贼/内奸，人数与身份配置、主公先选将、主公技、奖惩、AI 身份推断） | 完成 |
 | 4 | 3v3 / 5v5 / 10v10（随机/手动/房主分队、队长或平等、全灭或击杀队长、座位排列、先手补偿） | 完成 |
-| 5–7 | 局域网服务器、两机完整对局、断线重连 | 待开发 |
+| 5 | 局域网服务器：TCP 协议、房间（创建/加入/准备/踢人/房主转移/设置/分队/聊天/观战）、UDP 房间发现、邀请码、Android/iOS 网络权限 | 完成 |
+| 6 | 两台设备完整对局（测试中以两个独立 TCP 客户端 + AI 补位跑完整局验证） | 完成（真机验证待 UI） |
+| 7 | 断线重连（重连令牌、快照恢复、命令序号续接）、超时 AI 托管、回来收回控制 | 完成 |
 | 8–11 | 手机 UI、Android/iOS 真机测试、性能优化 | 待开发 |
 
 ## 目录
 
 ```
 Assets/Scripts/Core ...   纯 C# 规则内核（Sanguo.Core，无 UnityEngine 依赖）
-Assets/Scripts/App        Unity 层（GameManager、Resources 内容加载、临时调试视图）
+Assets/Scripts/Network    纯 C# 网络层（Sanguo.Network：协议、编解码、TCP/内存传输、LanGameServer、GameClient、房间发现）
+Assets/Scripts/App        Unity 层（GameManager、NetworkManager、Resources 内容加载、临时调试视图、平台适配）
+Assets/Editor             编辑器脚本（一键项目设置、命令行打包 APK/AAB/iOS/Windows、iOS Info.plist 权限）
+Assets/Plugins/Android    Android 局域网权限（manifest 库）
 Assets/Resources/Data     cards.json · skills.json · characters.json（全部原创名称、占位美术）
 Assets/Tests/EditMode     NUnit 测试（Unity Test Framework / .NET 通用）
 DotNet/                   无需 Unity 的构建、测试、模拟工程
@@ -45,7 +50,21 @@ dotnet run --project Sanguo.Sim -- --mode identity --players 8 --characters rand
 dotnet run --project Sanguo.Sim -- --batch 100 --mode team10v10 --players 20 --characters random  # 10v10 统计
 ```
 
-`Sanguo.Client` 工程会用 NuGet 上的 UnityEngine 引用程序集编译 `Assets/Scripts/App`，用于在没有 Unity 的环境中检查 Unity 层代码能否通过编译。
+`Sanguo.Client` 与 `Sanguo.Editor` 工程分别用 NuGet 上的 UnityEngine / UnityEditor 引用程序集编译 `Assets/Scripts/App` 与 `Assets/Editor`，用于在没有 Unity 的环境中检查 Unity 层代码能否通过编译。
+
+## 打包
+
+在 Unity 中执行菜单 **Sanguo ▸ Apply Recommended Settings**（横屏、IL2CPP、ARM64、包名、启动场景），然后 **Sanguo ▸ Build ▸ …**；
+或命令行：
+
+```bash
+Unity -batchmode -quit -projectPath games/sanguo-cards -executeMethod Sanguo.Editor.SanguoBuild.BuildAndroidApk
+Unity -batchmode -quit -projectPath games/sanguo-cards -executeMethod Sanguo.Editor.SanguoBuild.BuildAndroidAab
+Unity -batchmode -quit -projectPath games/sanguo-cards -executeMethod Sanguo.Editor.SanguoBuild.BuildIOS
+Unity -batchmode -quit -projectPath games/sanguo-cards -executeMethod Sanguo.Editor.SanguoBuild.BuildWindowsDebug
+```
+
+Android 正式签名通过环境变量 `SANGUO_KEYSTORE`、`SANGUO_KEYSTORE_PASS`、`SANGUO_KEY_ALIAS`、`SANGUO_KEY_PASS` 提供。
 
 新增或删除 `Assets/` 下的文件后运行 `python3 tools/generate_meta.py`，为新文件生成确定性 GUID 的 `.meta`。
 

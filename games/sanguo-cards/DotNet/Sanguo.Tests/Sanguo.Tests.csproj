@@ -17,8 +17,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Sanguo.Core\Sanguo.Core.csproj" />
+    <ProjectReference Include="..\Sanguo.Network\Sanguo.Network.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(UnityAssets)Tests\EditMode\**\*.cs" />
+    <!-- Pure C# editor helper, unit tested here (in Unity it lives in the editor assembly). -->
+    <Compile Include="$(UnityAssets)Editor\InfoPlistEditor.cs" />
   </ItemGroup>
 </Project>

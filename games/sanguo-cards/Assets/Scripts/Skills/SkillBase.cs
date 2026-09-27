@@ -95,6 +95,20 @@ namespace Sanguo.Skills
         /// <summary>Whether equipped cards may be spent on this skill.</summary>
         public virtual bool AllowsEquipmentCards => Definition.Params.GetBool("allowEquipment", false);
 
+        // UI hints (the server still validates through ValidateActivation).
+        public virtual int MinCards => Definition.Params.GetInt("minCards", 0);
+        public virtual int MaxCards => Definition.Params.GetInt("maxCards", MinCards);
+        public virtual int MinTargets => Definition.Params.GetInt("minTargets", 0);
+        public virtual int MaxTargets => Definition.Params.GetInt("maxTargets", MinTargets);
+
+        /// <summary>Players the skill may target now (UI hint). Default: every other living player when targets are used.</summary>
+        public virtual void GetLegalTargets(GameContext ctx, PlayerState owner, List<int> output)
+        {
+            if (MaxTargets <= 0) return;
+            foreach (var p in ctx.State.SeatOrder)
+                if (p.Alive && p.PlayerId != owner.PlayerId) output.Add(p.PlayerId);
+        }
+
         public virtual bool CanActivate(GameContext ctx, PlayerState owner, SkillInstance instance)
         {
             if (IsLimited && instance.UsedUp) return false;

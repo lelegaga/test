@@ -21,7 +21,7 @@ namespace Sanguo.Core
             request.OnOpened(ctx);
             _open.Add(request);
             if (request.IsResponseWindow) ctx.State.StateMachine.EnterWaitingResponse();
-            ctx.Emit(new RequestOpenedEvent { Info = request.ToInfo() });
+            ctx.Emit(new RequestOpenedEvent { Info = request.ToInfo(ctx) });
             return request;
         }
 

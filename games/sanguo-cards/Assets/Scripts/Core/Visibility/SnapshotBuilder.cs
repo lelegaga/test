@@ -67,7 +67,7 @@ namespace Sanguo.Core
 
             foreach (var r in ctx.Requests.OpenRequests)
             {
-                var info = r.ToInfo();
+                var info = r.ToInfo(ctx);
                 cs.OpenRequests.Add(r.PlayerId == viewerId ? info : info.PublicView());
             }
             return cs;

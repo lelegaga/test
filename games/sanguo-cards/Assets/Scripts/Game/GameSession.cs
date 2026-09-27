@@ -158,8 +158,7 @@ namespace Sanguo.Game
             }
             if (cmd != null)
             {
-                cmd.SequenceNumber = Engine.GetLastSequence(request.PlayerId) + 1;
-                var result = Engine.Submit(cmd, Now);
+                var result = Engine.SubmitFromHost(cmd, Now);
                 if (result.Accepted)
                 {
                     Flush();

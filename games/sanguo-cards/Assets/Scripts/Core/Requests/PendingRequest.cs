@@ -44,7 +44,8 @@ namespace Sanguo.Core
         {
         }
 
-        public RequestInfo ToInfo()
+        /// <summary>Client-facing description (with private details for the asked player).</summary>
+        public RequestInfo ToInfo(GameContext ctx)
         {
             var info = new RequestInfo
             {
@@ -55,11 +56,11 @@ namespace Sanguo.Core
                 IsResponseWindow = IsResponseWindow,
                 Purpose = Purpose
             };
-            FillInfo(info);
+            FillInfo(ctx, info);
             return info;
         }
 
-        protected virtual void FillInfo(RequestInfo info)
+        protected virtual void FillInfo(GameContext ctx, RequestInfo info)
         {
         }
 

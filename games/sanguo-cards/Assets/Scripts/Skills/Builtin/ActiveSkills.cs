@@ -19,6 +19,17 @@ namespace Sanguo.Skills.Builtin
         public int Cost => Definition.Params.GetInt("cost", 2);
         public int Damage => Definition.Params.GetInt("damage", 1);
 
+        public override int MinCards => Cost;
+        public override int MaxCards => Cost;
+        public override int MinTargets => 1;
+        public override int MaxTargets => 1;
+
+        public override void GetLegalTargets(GameContext ctx, PlayerState owner, List<int> output)
+        {
+            foreach (var p in ctx.State.SeatOrder)
+                if (ctx.Rules.IsInAttackRange(owner, p)) output.Add(p.PlayerId);
+        }
+
         public override bool CanActivate(GameContext ctx, PlayerState owner, SkillInstance instance)
         {
             return base.CanActivate(ctx, owner, instance) && owner.HandCards.Count >= Cost;

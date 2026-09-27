@@ -26,7 +26,8 @@ namespace Sanguo.Core
         PassNotAllowed = 19,
         SkillUnavailable = 20,
         MalformedCommand = 21,
-        InternalError = 22
+        InternalError = 22,
+        RateLimited = 23
     }
 
     /// <summary>Outcome of a rule check. A failed check never changes game state.</summary>

@@ -2,7 +2,8 @@
     "name": "Sanguo.Client",
     "rootNamespace": "Sanguo.App",
     "references": [
-        "Sanguo.Core"
+        "Sanguo.Core",
+        "Sanguo.Network"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

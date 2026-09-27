@@ -81,12 +81,11 @@ namespace Sanguo.Game
         /// <summary>Last sequence number accepted from a player (clients resume from it after reconnecting).</summary>
         public int GetLastSequence(int playerId) => _sequencer.GetLast(playerId);
 
+        /// <summary>Command from a client: sequence number checked, then validated and applied.</summary>
         public CommandResult Submit(GameCommand command, long nowMs)
         {
-            if (command == null) return CommandResult.Reject(RejectReason.MalformedCommand);
-            if (!IsStarted) return CommandResult.Reject(RejectReason.GameNotRunning);
-            if (State.IsGameOver) return CommandResult.Reject(RejectReason.GameOver);
-            if (State.GetPlayer(command.PlayerId) == null) return CommandResult.Reject(RejectReason.UnknownPlayer);
+            var pre = PreCheck(command);
+            if (pre != null) return pre;
 
             switch (_sequencer.Check(command.PlayerId, command.SequenceNumber))
             {
@@ -97,7 +96,29 @@ namespace Sanguo.Game
                         "Expected sequence " + (_sequencer.GetLast(command.PlayerId) + 1) + ", got " + command.SequenceNumber + ".");
             }
             _sequencer.Consume(command.PlayerId, command.SequenceNumber);
+            return Apply(command, nowMs);
+        }
 
+        /// <summary>
+        /// Command generated on the host itself (AI seats, auto-play): no network sequence number, so a
+        /// player's own numbering is unaffected while the AI plays for them. Rules are still enforced.
+        /// </summary>
+        public CommandResult SubmitFromHost(GameCommand command, long nowMs)
+        {
+            return PreCheck(command) ?? Apply(command, nowMs);
+        }
+
+        private CommandResult PreCheck(GameCommand command)
+        {
+            if (command == null) return CommandResult.Reject(RejectReason.MalformedCommand);
+            if (!IsStarted) return CommandResult.Reject(RejectReason.GameNotRunning);
+            if (State.IsGameOver) return CommandResult.Reject(RejectReason.GameOver);
+            if (State.GetPlayer(command.PlayerId) == null) return CommandResult.Reject(RejectReason.UnknownPlayer);
+            return null;
+        }
+
+        private CommandResult Apply(GameCommand command, long nowMs)
+        {
             Context.NowMs = nowMs;
             var v = Context.Rules.ValidateCommand(command, out var request);
             if (!v.IsValid) return CommandResult.Reject(v);

@@ -51,6 +51,17 @@ namespace Sanguo.Core
         {
             return new EndTurnCommand { PlayerId = PlayerId, RequestId = RequestId };
         }
+
+        /// <summary>
+        /// Private hints for the acting player's UI: which cards/skills are usable right now and their
+        /// legal targets, computed by the server's rule engine (the client never needs rule code).
+        /// </summary>
+        protected override void FillInfo(GameContext ctx, RequestInfo info)
+        {
+            info.HasPrivateDetails = true;
+            info.PlayHints = RequestHints.PlayableCards(ctx, PlayerId);
+            info.SkillHints = RequestHints.UsableSkills(ctx, PlayerId);
+        }
     }
 
     /// <summary>
@@ -113,8 +124,10 @@ namespace Sanguo.Core
             return new RespondCommand { PlayerId = PlayerId, RequestId = RequestId, CardIds = ids.ToArray(), Pass = ids.Count < Count };
         }
 
-        protected override void FillInfo(RequestInfo info)
+        protected override void FillInfo(GameContext ctx, RequestInfo info)
         {
+            info.HasPrivateDetails = true;
+            info.PlayHints = RequestHints.ResponseCards(ctx, PlayerId, RequiredCardId);
             info.RequiredCardId = RequiredCardId;
             info.SourcePlayerId = SourcePlayerId;
             info.TargetPlayerId = SubjectPlayerId;
@@ -177,7 +190,7 @@ namespace Sanguo.Core
             return new RespondCommand { PlayerId = PlayerId, RequestId = RequestId, CardIds = ids.ToArray() };
         }
 
-        protected override void FillInfo(RequestInfo info)
+        protected override void FillInfo(GameContext ctx, RequestInfo info)
         {
             info.Count = Count;
             info.MinCount = MinCount;
@@ -288,7 +301,7 @@ namespace Sanguo.Core
             return r;
         }
 
-        protected override void FillInfo(RequestInfo info)
+        protected override void FillInfo(GameContext ctx, RequestInfo info)
         {
             info.TargetPlayerId = TargetId;
             info.ContextCardId = ContextCardId;
@@ -336,7 +349,7 @@ namespace Sanguo.Core
             return new SelectTargetCommand { PlayerId = PlayerId, RequestId = RequestId, TargetIds = ids };
         }
 
-        protected override void FillInfo(RequestInfo info)
+        protected override void FillInfo(GameContext ctx, RequestInfo info)
         {
             info.SkillId = SkillId;
             info.Count = Max;
@@ -373,7 +386,7 @@ namespace Sanguo.Core
             return new RespondCommand { PlayerId = PlayerId, RequestId = RequestId, Pass = true };
         }
 
-        protected override void FillInfo(RequestInfo info)
+        protected override void FillInfo(GameContext ctx, RequestInfo info)
         {
             info.SkillId = SkillId;
             info.AllowPass = true;
@@ -408,7 +421,7 @@ namespace Sanguo.Core
             return new RespondCommand { PlayerId = PlayerId, RequestId = RequestId, OptionIndex = 0 };
         }
 
-        protected override void FillInfo(RequestInfo info)
+        protected override void FillInfo(GameContext ctx, RequestInfo info)
         {
             info.HasPrivateDetails = true;
             info.Options = new List<string>(Options);
@@ -448,7 +461,7 @@ namespace Sanguo.Core
             return new RespondCommand { PlayerId = PlayerId, RequestId = RequestId, OptionIndex = 0 };
         }
 
-        protected override void FillInfo(RequestInfo info)
+        protected override void FillInfo(GameContext ctx, RequestInfo info)
         {
             info.HasPrivateDetails = true;
             info.Options = new List<string>(CharacterIds);

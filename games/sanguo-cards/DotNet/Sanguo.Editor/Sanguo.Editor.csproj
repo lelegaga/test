@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Compile check for editor scripts (Assets/Editor, asmdef Sanguo.Editor) against UnityEditor.dll from
+    the Unity3D.SDK NuGet package (Unity 2021.1 API surface). Real builds happen inside Unity.
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>Sanguo.Editor</AssemblyName>
+    <RootNamespace>Sanguo.Editor</RootNamespace>
+    <NoWarn>$(NoWarn);NU1701;CS0618</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Unity3D.SDK" Version="2021.1.14.1" PrivateAssets="all" ExcludeAssets="runtime" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(UnityAssets)Editor\**\*.cs" />
+  </ItemGroup>
+</Project>

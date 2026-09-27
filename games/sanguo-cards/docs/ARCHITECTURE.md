@@ -51,7 +51,8 @@
 | --- | --- | --- |
 | `Sanguo.Core` | `Scripts/Core/Sanguo.Core.asmdef`，其余核心目录通过 `.asmref` 并入 | 规则内核，`noEngineReferences: true` |
 | `Sanguo.Client` | `Scripts/App/Sanguo.Client.asmdef` | Unity 层：GameManager、内容加载、（阶段 8）UI/音频/存档 |
-| `Sanguo.Network` | 阶段 5 新增 `Scripts/Network/` | 纯 C# 网络层 |
+| `Sanguo.Network` | `Scripts/Network/Sanguo.Network.asmdef` | 纯 C# 网络层（`noEngineReferences: true`） |
+| `Sanguo.Editor` | `Editor/Sanguo.Editor.asmdef` | 编辑器：项目设置、打包、iOS plist 后处理 |
 | `Sanguo.Tests.EditMode` | `Tests/EditMode/` | 编辑器测试，同时可由 `DotNet/Sanguo.Tests` 在 .NET 下运行 |
 
 ## 4. 目录结构
@@ -73,8 +74,10 @@ games/sanguo-cards/                  Unity 工程根目录
 │   │   ├── Data/        JsonValue、GameContent、ContentLoader、内容来源
 │   │   ├── Utils/       确定性随机数、时钟、对象池
 │   │   ├── App/         （Unity）GameManager、Resources 内容加载、调试对局视图
-│   │   ├── Network/     （阶段 5）
+│   │   ├── Network/     协议/编解码(Protocol)、序列化、传输(Transport)、房间(Rooms)、服务器(Server)、客户端(Client)、发现(Discovery)
 │   │   ├── UI/ Save/ Audio/（阶段 8）
+│   ├── Editor/          项目设置、打包脚本、iOS Info.plist 后处理
+│   ├── Plugins/Android/ SanguoNetwork.androidlib（局域网权限）
 │   ├── Resources/Data/  cards.json · skills.json · characters.json
 │   └── Tests/EditMode/  NUnit 测试
 ├── Packages/manifest.json
@@ -182,17 +185,30 @@ WaitingResponse：覆盖状态，有响应请求打开时生效，关闭后回�
   手牌/牌堆之间的移动只对相关手牌拥有者可见，其他人只收到数量，且**不下发隐藏牌的实例 ID**，防止跨移动追踪。
 - 每个事件带序号，客户端检测到断档即请求快照。测试保证“快照 + 事件流 = 新快照”，对每个观察者逐步校验。
 
-## 13. 网络（阶段 5–7 设计）
+## 13. 网络
 
-- 抽象：`INetworkTransport`（连接/收发字节帧）、`IGameServer`（接入玩家、转发命令、广播事件）、`IRoomService`（创建/发现/加入房间）。
-  `LanGameServer` + `TcpTransport` + `UdpRoomDiscovery` 是局域网实现；未来 `DedicatedGameServer` 复用同一个 `GameSession`。
-- `NetworkMessage` 头：`MessageType`、`PlayerID`、`RoomID`、`SequenceID`、`Timestamp`、`Payload`；二进制序列化，手写读写（无反射）。
-- 消息：CreateRoom、JoinRoom、LeaveRoom、PlayerReady、KickPlayer、TransferHost、StartGame、PlayCard、UseSkill、SelectTarget、
-  RespondCard、EndTurn、Reconnect、GameStateSync(快照)、GameEvents(增量)、Ping/Pong。
-- 断线重连：服务器保留 `PlayerState`；客户端提交 `RoomID + PlayerID + ReconnectToken`；验证后返回快照与最后接受的命令序号；
-  超过 `DisconnectAITakeoverMs` 自动 `AIControlled = true`，回来后收回控制权（已在 `GameSession` 实现并测试）。
-- 平台：Android 申请 `INTERNET`、`ACCESS_NETWORK_STATE`、`ACCESS_WIFI_STATE`、`CHANGE_WIFI_MULTICAST_STATE` 并持有 `MulticastLock`；
-  iOS 写入 `NSLocalNetworkUsageDescription` 与 `NSBonjourServices`；前后台切换时暂停/恢复心跳并触发重连。
+- 抽象：`INetworkTransport`（监听/连接，`IConnection` 收发消息）、`IGameServer`（接入玩家、转发命令、下发事件）、
+  `IRoomService`（发现/创建房间）。`TcpNetworkTransport` + `LanGameServer` + `LanRoomService`（UDP 广播）是局域网实现；
+  `InMemoryNetworkTransport` 用于测试。`LanGameServer` 与传输无关，将来的 `DedicatedGameServer` 直接复用它和 `GameSession`。
+- `NetworkMessage`：`MessageType`、`PlayerID`、`RoomID`、`SequenceID`、`Timestamp`、`Payload`；帧格式为 4 字节长度前缀 + 手写二进制
+  （zig-zag varint、UTF-8 字符串），单帧上限 1 MB，读取端对所有长度做边界检查，随机垃圾数据只会抛 `ProtocolException`。
+- 消息：Hello/Welcome、CreateRoom/JoinRoom/JoinAccepted/JoinRejected/LeaveRoom/RoomState、PlayerReady、KickPlayer、TransferHost、
+  UpdateRoomSettings、ChangeTeam、Chat、StartGame、PlayCard/UseSkill/SelectTarget/RespondCard/EndTurn、SetAutoPlay、CommandResult、
+  GameStateSync（快照）、GameEvents（增量批次）、RequestResync、Reconnect/ReconnectAccepted/ReconnectRejected、GameFinished、Ping/Pong。
+- 安全：服务器**忽略客户端声明的 PlayerID**，一律使用连接绑定的座位；握手前的消息、协议版本不符、畸形帧、刷屏（超过每秒上限）直接断开；
+  被限流的命令会收到明确的拒绝；房主权限（设置/开始/踢人/转移）在服务器校验；重连令牌由加密随机数生成。
+- 同步：开局与重连发送该座位的快照，之后每帧把该座位的裁剪事件合并成一个 `GameEvents` 批次；公开事件对多名观察者只编码一次。
+  客户端发现序号断档即发 `RequestResync`。
+- 服务器提示：出牌请求附带“可用牌/合法目标/可用技能/可响应的牌”（仅发给被询问者），客户端 UI 无需规则代码即可高亮合法目标，
+  服务器仍会完整校验。
+- 断线重连：座位保留，客户端带 `RoomID + 座位 + ReconnectToken` 自动重连（指数退避），服务器校验后发送快照与最后接受的命令序号；
+  断线超过 `DisconnectAITakeoverMs` 由 AI 托管，重连后收回控制权。AI 代打的命令走主机内部通道，不占用玩家的命令序号。
+- 房间发现：房主每秒向受限广播地址与各网卡定向广播地址发送 UDP 公告（端口 47777），浏览端以包源地址为准、3.5 秒过期；
+  **邀请码**把房主 IPv4 + 端口编码为 8 位（如 `C1M0-G1A5`），广播被屏蔽时可直接输入。
+- 平台：Android 通过 `Plugins/Android/SanguoNetwork.androidlib` 合并 `INTERNET`、`ACCESS_NETWORK_STATE`、`ACCESS_WIFI_STATE`、
+  `CHANGE_WIFI_MULTICAST_STATE` 权限，浏览/建房时持有 `MulticastLock`；iOS 打包后自动写入 `NSLocalNetworkUsageDescription`
+  与 `NSBonjourServices`。iOS 14.5+ 收发 UDP 广播需要 Apple 审批的 multicast entitlement，因此 iOS 端以邀请码/手动 IP 为主，
+  Bonjour（mDNS）发现在阶段 10 以原生插件实现（服务类型已在 plist 中声明）。前后台切换时客户端自动重连。
 
 ## 14. AI
 

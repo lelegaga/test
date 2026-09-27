@@ -67,6 +67,41 @@ DefaultImporter:
   assetBundleVariant: 
 """
 
+ANDROID_LIB = """fileFormatVersion: 2
+guid: {guid}
+folderAsset: yes
+PluginImporter:
+  externalObjects: {{}}
+  serializedVersion: 2
+  iconMap: {{}}
+  executionOrder: {{}}
+  defineConstraints: []
+  isPreloaded: 0
+  isOverridable: 0
+  isExplicitlyReferenced: 0
+  validateReferences: 1
+  platformData:
+  - first:
+      Android: Android
+    second:
+      enabled: 1
+      settings: {{}}
+  - first:
+      Any: 
+    second:
+      enabled: 0
+      settings: {{}}
+  - first:
+      Editor: Editor
+    second:
+      enabled: 0
+      settings:
+        DefaultValueInitialized: true
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+"""
+
 TEMPLATES = {".cs": MONO, ".asmdef": ASMDEF, ".asmref": ASMREF, ".json": TEXT, ".txt": TEXT, ".md": TEXT, ".xml": TEXT}
 
 
@@ -89,7 +124,8 @@ def main():
     for dirpath, dirnames, filenames in os.walk(ASSETS):
         dirnames[:] = [d for d in dirnames if not d.startswith(".")]
         for d in dirnames:
-            created += write_meta(os.path.join(dirpath, d), FOLDER)
+            template = ANDROID_LIB if d.endswith(".androidlib") else FOLDER
+            created += write_meta(os.path.join(dirpath, d), template)
         for name in filenames:
             if name.endswith(".meta") or name.startswith("."):
                 continue
