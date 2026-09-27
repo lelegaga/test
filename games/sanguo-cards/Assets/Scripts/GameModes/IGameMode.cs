@@ -72,6 +72,9 @@ namespace Sanguo.GameModes
 
         int GetMaxHpBonus(GameState state, PlayerState player);
 
+        /// <summary>Extra opening-hand cards (e.g. compensation for moving later).</summary>
+        int GetStartingHandBonus(GameState state, PlayerState player);
+
         /// <summary>
         /// Players choosing characters, as consecutive groups (e.g. the lord first, then everyone
         /// else). Each group sees the choices of the groups before it.

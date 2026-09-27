@@ -33,6 +33,8 @@ namespace Sanguo.GameModes
 
         public virtual int GetMaxHpBonus(GameState state, PlayerState player) => 0;
 
+        public virtual int GetStartingHandBonus(GameState state, PlayerState player) => 0;
+
         public virtual IReadOnlyList<IReadOnlyList<PlayerState>> GetCharacterSelectionGroups(GameState state)
         {
             return new List<IReadOnlyList<PlayerState>> { new List<PlayerState>(state.SeatOrder) };
@@ -180,6 +182,10 @@ namespace Sanguo.GameModes
             var r = new GameModeRegistry();
             r.Register(FreeForAllMode.Id, c => new FreeForAllMode(c));
             r.Register(IdentityMode.Id, c => new IdentityMode(c));
+            r.Register(TeamBattleMode.Id, c => new TeamBattleMode(c));
+            r.Register(Team3v3Mode.Id, c => new Team3v3Mode(c));
+            r.Register(Team5v5Mode.Id, c => new Team5v5Mode(c));
+            r.Register(Team10v10Mode.Id, c => new Team10v10Mode(c));
             return r;
         }
     }

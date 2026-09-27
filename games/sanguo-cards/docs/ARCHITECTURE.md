@@ -170,7 +170,7 @@ WaitingResponse：覆盖状态，有响应请求打开时生效，关闭后回�
 | --- | --- |
 | `FreeForAllMode`（混战，最小可玩版本） | 已完成 |
 | `IdentityMode`（主公/忠臣/反贼/内奸，人数与身份分布可配置，主公先选将、主公技、击杀奖惩） | 已完成 |
-| `Team3v3Mode` / `Team5v5Mode` / `Team10v10Mode`（共用 TeamBattleModeBase） | 阶段 4 |
+| `TeamBattleMode` 及 `Team3v3Mode` / `Team5v5Mode` / `Team10v10Mode`（同一实现，仅队伍人数不同；分队方式、队长、胜负规则、座位排列、先手补偿均由配置控制） | 已完成 |
 | 1v1、2v2、国战、竞技场、PVE、BOSS | 预留：实现 `IGameMode` 并注册到 `GameModeRegistry` |
 
 ## 12. 隐藏信息与同步

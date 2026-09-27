@@ -113,6 +113,12 @@ namespace Sanguo.GameModes
         public SeatArrangement Seating = SeatArrangement.Alternating;
         /// <summary>Extra max HP for captains.</summary>
         public int CaptainExtraHp = 1;
+        /// <summary>Cards drawn by a player who kills an enemy in team modes.</summary>
+        public int TeamKillReward = 1;
+        /// <summary>Extra opening cards for the team that moves second (first-move compensation).</summary>
+        public int SecondTeamExtraCards;
+        /// <summary>The very first turn of the game draws this many fewer cards (first-move compensation).</summary>
+        public int FirstTurnDrawPenalty = 1;
 
         public int GetTimeoutMs(RequestKind kind)
         {
@@ -163,7 +169,7 @@ namespace Sanguo.GameModes
                 .Set("allowSpectators", AllowSpectators).Set("disconnectAITakeoverMs", DisconnectAITakeoverMs)
                 .Set("lordExtraHp", LordExtraHp).Set("teamSize", TeamSize).Set("teamAssignment", TeamAssignment.ToString())
                 .Set("useCaptain", UseCaptain).Set("teamVictory", TeamVictory.ToString()).Set("seating", Seating.ToString())
-                .Set("captainExtraHp", CaptainExtraHp);
+                .Set("captainExtraHp", CaptainExtraHp).Set("teamKillReward", TeamKillReward).Set("secondTeamExtraCards", SecondTeamExtraCards).Set("firstTurnDrawPenalty", FirstTurnDrawPenalty);
             var roles = JsonValue.NewArray();
             foreach (var r in Roles) roles.Add(JsonValue.NewObject().Set("role", r.Role.ToString()).Set("count", r.Count));
             j.Set("roles", roles);
@@ -203,6 +209,9 @@ namespace Sanguo.GameModes
             c.TeamVictory = ParseEnum(j.GetString("teamVictory"), c.TeamVictory);
             c.Seating = ParseEnum(j.GetString("seating"), c.Seating);
             c.CaptainExtraHp = j.GetInt("captainExtraHp", c.CaptainExtraHp);
+            c.TeamKillReward = j.GetInt("teamKillReward", c.TeamKillReward);
+            c.SecondTeamExtraCards = j.GetInt("secondTeamExtraCards", c.SecondTeamExtraCards);
+            c.FirstTurnDrawPenalty = j.GetInt("firstTurnDrawPenalty", c.FirstTurnDrawPenalty);
             foreach (var r in j["roles"].Items)
                 c.Roles.Add(new RoleCount(ParseEnum(r.GetString("role"), Role.None), r.GetInt("count")));
             c.CharacterPool.AddRange(j.GetStringList("characterPool"));

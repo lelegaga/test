@@ -55,7 +55,11 @@ namespace Sanguo.Game
                     _stage = 1;
                     return ActionResult.Continue;
                 default:
-                    foreach (var p in s.SeatOrder) ctx.Mutator.DrawCards(p, ctx.Config.StartingHandSize, MoveReason.Deal);
+                    foreach (var p in s.SeatOrder)
+                    {
+                        int count = ctx.Config.StartingHandSize + ctx.Mode.GetStartingHandBonus(s, p);
+                        if (count > 0) ctx.Mutator.DrawCards(p, count, MoveReason.Deal);
+                    }
                     return ActionResult.Done;
             }
         }
