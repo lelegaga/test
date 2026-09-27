@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Runs the Unity edit-mode tests (Assets/Tests/EditMode) under plain NUnit so they can be executed
+    in CI and in environments without the Unity editor. Assembly name matches the Unity asmdef so the
+    InternalsVisibleTo attribute applies in both worlds.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>Sanguo.Tests.EditMode</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="NUnit" Version="3.14.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sanguo.Core\Sanguo.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(UnityAssets)Tests\EditMode\**\*.cs" />
+  </ItemGroup>
+</Project>

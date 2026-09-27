@@ -1,0 +1,36 @@
+name: Sanguo Cards
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "games/sanguo-cards/**"
+      - ".github/workflows/sanguo-cards.yml"
+  pull_request:
+    paths:
+      - "games/sanguo-cards/**"
+      - ".github/workflows/sanguo-cards.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: games/sanguo-cards/DotNet
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Check Unity meta files
+        working-directory: games/sanguo-cards
+        run: |
+          python3 tools/generate_meta.py
+          git diff --exit-code --stat -- Assets || (echo "Missing .meta files: run tools/generate_meta.py" && exit 1)
+          test -z "$(git status --porcelain -- Assets)" || (git status --porcelain -- Assets && echo "Untracked .meta files: run tools/generate_meta.py" && exit 1)
+      - name: Build and test
+        run: dotnet test Sanguo.sln -c Release
+      - name: Simulate bot games
+        run: |
+          dotnet run -c Release --project Sanguo.Sim -- --batch 100 --players 4
+          dotnet run -c Release --project Sanguo.Sim -- --batch 30 --players 20 --characters random

@@ -1,0 +1,79 @@
+{
+  "skills": [
+    {
+      "id": "endure",
+      "name": "坚忍",
+      "class": "DrawOnDamaged",
+      "description": "当你受到伤害后，你可以摸X张牌（X为伤害值）。",
+      "params": { "perDamage": 1 }
+    },
+    {
+      "id": "strategist",
+      "name": "谋略",
+      "class": "ExtraDraw",
+      "locked": true,
+      "description": "锁定技，摸牌阶段，你多摸一张牌。",
+      "params": { "amount": 1 }
+    },
+    {
+      "id": "valor",
+      "name": "勇猛",
+      "class": "UsageLimitBonus",
+      "locked": true,
+      "description": "锁定技，出牌阶段你使用【攻击】无次数限制。",
+      "params": { "key": "strike", "amount": 99 }
+    },
+    {
+      "id": "horsemanship",
+      "name": "骑术",
+      "class": "DistanceBonus",
+      "locked": true,
+      "description": "锁定技，你计算与其他角色的距离-1。",
+      "params": { "outgoing": -1 }
+    },
+    {
+      "id": "iron_wall",
+      "name": "铁壁",
+      "class": "DamageCap",
+      "locked": true,
+      "description": "锁定技，你每次受到的伤害至多为1点。",
+      "params": { "max": 1 }
+    },
+    {
+      "id": "raid",
+      "name": "奇袭",
+      "class": "DiscardToDamage",
+      "description": "出牌阶段限一次，你可以弃置两张手牌，对攻击范围内的一名其他角色造成1点伤害。",
+      "params": { "cost": 2, "damage": 1, "usesPerPhase": 1 }
+    },
+    {
+      "id": "last_stand",
+      "name": "破釜沉舟",
+      "class": "AreaDamage",
+      "limited": true,
+      "description": "限定技，出牌阶段，你可以对所有其他角色各造成1点伤害。",
+      "params": { "damage": 1 }
+    },
+    {
+      "id": "dragon_dance",
+      "name": "游龙",
+      "class": "CardConversion",
+      "description": "你可以将【攻击】当【闪避】、【闪避】当【攻击】使用或打出。",
+      "params": { "pairs": [["strike", "dodge"], ["dodge", "strike"]] }
+    },
+    {
+      "id": "legacy",
+      "name": "遗志",
+      "class": "DeathGift",
+      "description": "当你死亡时，你可以令一名其他角色摸三张牌。",
+      "params": { "count": 3 }
+    },
+    {
+      "id": "benevolence",
+      "name": "仁心",
+      "class": "HealDraw",
+      "description": "当你令其他角色回复生命后，你可以摸一张牌。",
+      "params": { "count": 1 }
+    }
+  ]
+}

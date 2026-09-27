@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Compile check for the Unity-facing scripts (Assets/Scripts/App, asmdef Sanguo.Client) against
+    UnityEngine reference assemblies from NuGet (Unity 2021.3 API surface; Unity 6 is a superset for
+    the APIs used here). Real builds are done by the Unity editor.
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>Sanguo.Client</AssemblyName>
+    <RootNamespace>Sanguo.App</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="UnityEngine.Modules" Version="2021.3.33" PrivateAssets="all" ExcludeAssets="runtime" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sanguo.Core\Sanguo.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(UnityAssets)Scripts\App\**\*.cs" />
+  </ItemGroup>
+</Project>
