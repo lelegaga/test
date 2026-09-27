@@ -20,6 +20,9 @@ namespace Sanguo.Sim
     /// </summary>
     public static class Program
     {
+        private static string _modeId = FreeForAllMode.Id;
+        private static readonly GameModeRegistry Modes = GameModeRegistry.CreateDefault();
+
         public static int Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
@@ -34,6 +37,7 @@ namespace Sanguo.Sim
             int players = Get(opts, "players", 4);
             int seed = Get(opts, "seed", 1);
             bool characters = opts.TryGetValue("characters", out var ch) && ch == "random";
+            _modeId = opts.TryGetValue("mode", out var m) ? m : FreeForAllMode.Id;
             int batch = Get(opts, "batch", 0);
             return batch > 0 ? RunBatch(content, players, characters, seed, batch) : RunOne(content, players, characters, seed, Get(opts, "viewer", 0), opts.ContainsKey("quiet"));
         }
@@ -42,7 +46,7 @@ namespace Sanguo.Sim
         {
             return new GameModeConfig
             {
-                ModeId = FreeForAllMode.Id,
+                ModeId = _modeId,
                 PlayerCount = players,
                 StartingHandSize = 4,
                 DrawPerTurn = 2,
@@ -56,7 +60,7 @@ namespace Sanguo.Sim
         {
             var config = Config(players, characters);
             var setups = Enumerable.Range(0, players).Select(i => new PlayerSetup("玩家" + (char)('A' + i), true)).ToList();
-            var engine = new GameEngine(content, new FreeForAllMode(config), config, setups, seed);
+            var engine = new GameEngine(content, Modes.Create(config), config, setups, seed);
             return new GameSession(engine, new ManualClock());
         }
 
@@ -76,9 +80,9 @@ namespace Sanguo.Sim
                 lines++;
                 if (!quiet) Console.WriteLine(line);
             });
-            Console.WriteLine("=== 混战 " + players + " 人，种子 " + seed + "，视角：" + replica.GetPlayer(viewer).Nickname + " ===");
+            Console.WriteLine("=== " + session.Engine.Context.Mode.DisplayName + " " + players + " 人，种子 " + seed + "，视角：" + replica.GetPlayer(viewer).Nickname + " ===");
             foreach (var p in replica.Players.OrderBy(p => p.Seat))
-                Console.WriteLine("座位" + p.Seat + " " + p.Nickname + " 武将=" + p.CharacterId + " 生命=" + p.Hp + "/" + p.MaxHp + " 手牌=" + p.HandCount);
+                Console.WriteLine("座位" + p.Seat + " " + p.Nickname + " 身份=" + GameLogFormatter.RoleName(p.Role) + " 武将=" + p.CharacterId + " 生命=" + p.Hp + "/" + p.MaxHp + " 手牌=" + p.HandCount);
             var sw = Stopwatch.StartNew();
             session.RunUntilHumanInputOrEnd();
             sw.Stop();
@@ -94,6 +98,7 @@ namespace Sanguo.Sim
         {
             int draws = 0;
             long turns = 0, events = 0;
+            var winsByFaction = new Dictionary<string, int>();
             var winsBySeat = new int[players];
             var sw = Stopwatch.StartNew();
             for (int g = 0; g < games; g++)
@@ -106,6 +111,8 @@ namespace Sanguo.Sim
                 events += session.Engine.Context.Events.LastSequence;
                 if (s.Result.IsDraw) draws++;
                 else foreach (int w in s.Result.WinnerIds) winsBySeat[s.GetPlayer(w).Seat]++;
+                string key = s.Result.IsDraw ? "draw" : s.Result.WinningFaction + "/" + s.Result.Reason;
+                winsByFaction[key] = winsByFaction.TryGetValue(key, out int k) ? k + 1 : 1;
                 var err = s.ValidateInvariants();
                 if (err != null)
                 {
@@ -114,10 +121,11 @@ namespace Sanguo.Sim
                 }
             }
             sw.Stop();
-            Console.WriteLine(games + " games, " + players + " players, characters=" + characters);
+            Console.WriteLine(games + " games, mode=" + _modeId + ", " + players + " players, characters=" + characters);
             Console.WriteLine("draws=" + draws + " avgTurns=" + (turns / (double)games).ToString("F1") + " avgEvents=" + (events / (double)games).ToString("F0")
                               + " totalMs=" + sw.ElapsedMilliseconds + " msPerGame=" + (sw.ElapsedMilliseconds / (double)games).ToString("F2"));
             Console.WriteLine("wins by seat: " + string.Join(" ", winsBySeat.Select((w, i) => i + ":" + w)));
+            Console.WriteLine("results: " + string.Join("  ", winsByFaction.OrderByDescending(kv => kv.Value).Select(kv => kv.Key + "=" + kv.Value)));
             return 0;
         }
 

@@ -169,7 +169,7 @@ WaitingResponse：覆盖状态，有响应请求打开时生效，关闭后回�
 | 模式 | 状态 |
 | --- | --- |
 | `FreeForAllMode`（混战，最小可玩版本） | 已完成 |
-| `IdentityMode`（主公/忠臣/反贼/内奸，人数可配置） | 阶段 3 |
+| `IdentityMode`（主公/忠臣/反贼/内奸，人数与身份分布可配置，主公先选将、主公技、击杀奖惩） | 已完成 |
 | `Team3v3Mode` / `Team5v5Mode` / `Team10v10Mode`（共用 TeamBattleModeBase） | 阶段 4 |
 | 1v1、2v2、国战、竞技场、PVE、BOSS | 预留：实现 `IGameMode` 并注册到 `GameModeRegistry` |
 
@@ -202,7 +202,9 @@ AIController → PlayerPerspective（只含该玩家可知信息）
 ```
 
 打分因素：伤害/治疗/击杀收益、敌友关系（hostility）、自身体力、手牌数量；响应、弃牌、选牌、选目标各有策略。
-`IAIDecisionMaker` 接口预留蒙特卡洛、强化学习、LLM 等实现；`IRelationEstimator` 预留身份模式的敌友推断。
+`IAIDecisionMaker` 接口预留蒙特卡洛、强化学习、LLM 等实现。身份模式中 AI 使用 `IdentityRelationEstimator`：
+只根据本座位收到的公开事件（谁攻击/救助了谁、阵亡翻开的身份）估计每名角色对主公的“亲疏度”，再结合自己的秘密身份
+换算敌友（反贼视主公为敌、内奸在反贼未清前保护主公等）。
 
 ## 15. UI 规划（阶段 8）
 

@@ -33,6 +33,15 @@ namespace Sanguo.GameModes
 
         public virtual int GetMaxHpBonus(GameState state, PlayerState player) => 0;
 
+        public virtual IReadOnlyList<IReadOnlyList<PlayerState>> GetCharacterSelectionGroups(GameState state)
+        {
+            return new List<IReadOnlyList<PlayerState>> { new List<PlayerState>(state.SeatOrder) };
+        }
+
+        public virtual int GetCharacterChoiceCount(GameState state, PlayerState player, int configured) => configured;
+
+        public virtual bool CanUseLordSkills(GameState state, PlayerState player) => false;
+
         public virtual IEnumerable<string> GetExtraSkillIds(GameState state, PlayerState player) => Array.Empty<string>();
 
         public virtual PlayerState GetFirstPlayer(GameState state)
@@ -170,6 +179,7 @@ namespace Sanguo.GameModes
         {
             var r = new GameModeRegistry();
             r.Register(FreeForAllMode.Id, c => new FreeForAllMode(c));
+            r.Register(IdentityMode.Id, c => new IdentityMode(c));
             return r;
         }
     }

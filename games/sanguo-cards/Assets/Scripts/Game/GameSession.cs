@@ -28,6 +28,7 @@ namespace Sanguo.Game
             Engine = engine ?? throw new ArgumentNullException(nameof(engine));
             _clock = clock ?? new SystemClock();
             _brainFactory = brainFactory;
+            EstimatorFactory = _ => AIRelationEstimators.CreateFor(engine.Context.Mode);
         }
 
         public GameEngine Engine { get; }
@@ -39,15 +40,29 @@ namespace Sanguo.Game
         /// <summary>Minimum time an AI waits before answering (UX pacing). 0 = instant.</summary>
         public int AIThinkDelayMs { get; set; }
 
-        /// <summary>Optional relation estimator factory for AI seats (identity mode inference).</summary>
+        /// <summary>Relation estimator factory for AI seats (identity mode inference). Set before Start.</summary>
         public Func<int, IRelationEstimator> EstimatorFactory { get; set; }
+
+        private bool _aiPrepared;
 
         public long Now => _clock.NowMs;
 
         public void Start()
         {
+            EnsureAIControllers();
             Engine.Start(Now);
             Flush();
+        }
+
+        /// <summary>
+        /// Creates an AI controller for every seat up front (any human may later be handed to the AI)
+        /// so relation estimators observe the whole game from that seat's point of view.
+        /// </summary>
+        private void EnsureAIControllers()
+        {
+            if (_aiPrepared) return;
+            _aiPrepared = true;
+            foreach (var p in State.Players) GetAI(p.PlayerId);
         }
 
         /// <summary>
@@ -83,6 +98,7 @@ namespace Sanguo.Game
                 Flush();
                 return;
             }
+            EnsureAIControllers();
             CheckDisconnections();
             Engine.Tick(Now);
             Flush();
@@ -95,6 +111,7 @@ namespace Sanguo.Game
         /// </summary>
         public bool RunUntilHumanInputOrEnd(int maxCommands = 100000)
         {
+            EnsureAIControllers();
             for (int i = 0; i < maxCommands && !Engine.IsGameOver; i++)
             {
                 if (!RunAI(true)) break;
@@ -161,8 +178,10 @@ namespace Sanguo.Game
             if (!_ai.TryGetValue(playerId, out var ai))
             {
                 var brain = _brainFactory?.Invoke(playerId) ?? new HeuristicAI();
-                ai = new AIController(playerId, brain, Engine.Seed, EstimatorFactory?.Invoke(playerId));
+                var estimator = EstimatorFactory?.Invoke(playerId);
+                ai = new AIController(playerId, brain, Engine.Seed, estimator);
                 _ai[playerId] = ai;
+                if (estimator is IGameEventObserver observer) AddViewer(playerId, observer.Observe);
             }
             return ai;
         }

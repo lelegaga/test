@@ -14,6 +14,11 @@ namespace Sanguo.GameModes
         public Team Team;
         /// <summary>Optional preselected character.</summary>
         public string CharacterId;
+        /// <summary>
+        /// Optional preset role (scripted games, tutorials, tests). Used by modes with roles only when
+        /// every seat has one and the distribution is valid; otherwise roles are dealt randomly.
+        /// </summary>
+        public Role Role;
 
         public PlayerSetup(string nickname, bool isBot = false)
         {
@@ -66,6 +71,18 @@ namespace Sanguo.GameModes
         void SetupPlayers(GameSetupContext setup);
 
         int GetMaxHpBonus(GameState state, PlayerState player);
+
+        /// <summary>
+        /// Players choosing characters, as consecutive groups (e.g. the lord first, then everyone
+        /// else). Each group sees the choices of the groups before it.
+        /// </summary>
+        IReadOnlyList<IReadOnlyList<PlayerState>> GetCharacterSelectionGroups(GameState state);
+
+        /// <summary>Number of character options offered to a player in Choose mode.</summary>
+        int GetCharacterChoiceCount(GameState state, PlayerState player, int configured);
+
+        /// <summary>Whether the player's lord skills (主公技) are active.</summary>
+        bool CanUseLordSkills(GameState state, PlayerState player);
 
         /// <summary>Mode-granted skills (e.g. lord skills) added on top of character skills.</summary>
         IEnumerable<string> GetExtraSkillIds(GameState state, PlayerState player);

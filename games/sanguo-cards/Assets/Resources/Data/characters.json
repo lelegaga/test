@@ -1,15 +1,15 @@
 {
   "characters": [
     { "id": "recruit", "name": "无名小卒", "title": "占位武将", "kingdom": "qun", "maxHp": 4, "gender": "male", "skills": [], "description": "开发阶段使用的无技能占位武将。", "portrait": "portrait_placeholder" },
-    { "id": "liubei", "name": "刘备", "title": "仁德之主", "kingdom": "shu", "maxHp": 4, "gender": "male", "skills": ["benevolence"], "description": "蜀汉开国皇帝。", "portrait": "portrait_placeholder" },
+    { "id": "liubei", "name": "刘备", "title": "仁德之主", "kingdom": "shu", "maxHp": 4, "gender": "male", "skills": ["benevolence", "imperial_aura"], "description": "蜀汉开国皇帝。", "portrait": "portrait_placeholder" },
     { "id": "guanyu", "name": "关羽", "title": "武圣", "kingdom": "shu", "maxHp": 4, "gender": "male", "skills": ["horsemanship"], "description": "蜀汉名将。", "portrait": "portrait_placeholder" },
     { "id": "zhangfei", "name": "张飞", "title": "万人敌", "kingdom": "shu", "maxHp": 4, "gender": "male", "skills": ["valor"], "description": "蜀汉名将。", "portrait": "portrait_placeholder" },
     { "id": "zhaoyun", "name": "赵云", "title": "常胜将军", "kingdom": "shu", "maxHp": 4, "gender": "male", "skills": ["dragon_dance"], "description": "蜀汉名将。", "portrait": "portrait_placeholder" },
     { "id": "machao", "name": "马超", "title": "锦马超", "kingdom": "shu", "maxHp": 4, "gender": "male", "skills": ["horsemanship"], "description": "西凉猛将。", "portrait": "portrait_placeholder" },
-    { "id": "caocao", "name": "曹操", "title": "魏武帝", "kingdom": "wei", "maxHp": 4, "gender": "male", "skills": ["endure"], "description": "曹魏奠基者。", "portrait": "portrait_placeholder" },
+    { "id": "caocao", "name": "曹操", "title": "魏武帝", "kingdom": "wei", "maxHp": 4, "gender": "male", "skills": ["endure", "imperial_aura"], "description": "曹魏奠基者。", "portrait": "portrait_placeholder" },
     { "id": "xiahoudun", "name": "夏侯惇", "title": "独眼将军", "kingdom": "wei", "maxHp": 4, "gender": "male", "skills": ["iron_wall"], "description": "曹魏名将。", "portrait": "portrait_placeholder" },
     { "id": "simayi", "name": "司马懿", "title": "冢虎", "kingdom": "wei", "maxHp": 3, "gender": "male", "skills": ["raid"], "description": "曹魏谋臣。", "portrait": "portrait_placeholder" },
-    { "id": "sunquan", "name": "孙权", "title": "东吴大帝", "kingdom": "wu", "maxHp": 4, "gender": "male", "skills": ["strategist"], "description": "东吴君主。", "portrait": "portrait_placeholder" },
+    { "id": "sunquan", "name": "孙权", "title": "东吴大帝", "kingdom": "wu", "maxHp": 4, "gender": "male", "skills": ["strategist", "imperial_aura"], "description": "东吴君主。", "portrait": "portrait_placeholder" },
     { "id": "zhouyu", "name": "周瑜", "title": "美周郎", "kingdom": "wu", "maxHp": 3, "gender": "male", "skills": ["strategist", "last_stand"], "description": "东吴都督。", "portrait": "portrait_placeholder" },
     { "id": "huanggai", "name": "黄盖", "title": "老当益壮", "kingdom": "wu", "maxHp": 4, "gender": "male", "skills": ["last_stand"], "description": "东吴老将。", "portrait": "portrait_placeholder" },
     { "id": "sunshangxiang", "name": "孙尚香", "title": "弓腰姬", "kingdom": "wu", "maxHp": 3, "gender": "female", "skills": ["strategist", "legacy"], "description": "东吴郡主。", "portrait": "portrait_placeholder" },

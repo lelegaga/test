@@ -69,6 +69,15 @@
       "params": { "count": 3 }
     },
     {
+      "id": "imperial_aura",
+      "name": "帝王之气",
+      "class": "ExtraDraw",
+      "locked": true,
+      "lord": true,
+      "description": "主公技，锁定技，摸牌阶段，你多摸一张牌。",
+      "params": { "amount": 1 }
+    },
+    {
       "id": "benevolence",
       "name": "仁心",
       "class": "HealDraw",

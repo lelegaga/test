@@ -11,7 +11,7 @@
 | --- | --- | --- |
 | 1 | 核心：GameState、PlayerState、卡牌、事件、命令、规则引擎、状态机、模式接口 | 完成 |
 | 2 | 最小可玩版本：AI 自动对局（摸牌、出牌、攻击、响应、掉血、濒死求救、死亡、换回合、胜负） | 完成 |
-| 3 | 身份模式（主公/忠臣/反贼/内奸） | 待开发 |
+| 3 | 身份模式（主公/忠臣/反贼/内奸，人数与身份配置、主公先选将、主公技、奖惩、AI 身份推断） | 完成 |
 | 4 | 3v3 / 5v5 / 10v10 | 待开发 |
 | 5–7 | 局域网服务器、两机完整对局、断线重连 | 待开发 |
 | 8–11 | 手机 UI、Android/iOS 真机测试、性能优化 | 待开发 |
@@ -41,6 +41,7 @@ cd games/sanguo-cards/DotNet
 dotnet test Sanguo.sln                                  # 编译全部工程并运行测试
 dotnet run --project Sanguo.Sim -- --players 4 --seed 3  # 打印一局 AI 对局日志（玩家视角）
 dotnet run --project Sanguo.Sim -- --batch 300 --players 8 --characters random  # 批量统计
+dotnet run --project Sanguo.Sim -- --mode identity --players 8 --characters random --seed 5  # 身份局
 ```
 
 `Sanguo.Client` 工程会用 NuGet 上的 UnityEngine 引用程序集编译 `Assets/Scripts/App`，用于在没有 Unity 的环境中检查 Unity 层代码能否通过编译。

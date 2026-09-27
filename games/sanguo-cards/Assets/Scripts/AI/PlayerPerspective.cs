@@ -116,8 +116,16 @@ namespace Sanguo.AI
             return Relation.Unknown;
         }
 
-        /// <summary>-1 ally .. +1 enemy. Self is -1.</summary>
+        /// <summary>-1 ally .. +1 enemy. Self is -1. A relation estimator, when present, has the final say.</summary>
         public float Hostility(int playerId)
+        {
+            if (playerId == ViewerId) return -1f;
+            if (_estimator != null) return _estimator.EstimateHostility(this, playerId);
+            return KnownHostility(playerId);
+        }
+
+        /// <summary>Hostility from public facts only (teams, visible roles); 0 when unknown.</summary>
+        public float KnownHostility(int playerId)
         {
             switch (GetRelation(playerId))
             {
@@ -127,9 +135,34 @@ namespace Sanguo.AI
                 case Relation.Enemy:
                     return 1f;
                 default:
-                    return _estimator?.EstimateHostility(this, playerId) ?? 0f;
+                    return 0f;
             }
         }
+
+        /// <summary>Configured number of players with a role (public room setting).</summary>
+        public int ConfiguredRoleCount(Role role)
+        {
+            if (_ctx.Mode is GameModes.IdentityMode identity)
+            {
+                int n = 0;
+                foreach (var rc in identity.EffectiveRoles(_ctx.State.PlayerCount))
+                    if (rc.Role == role) n += rc.Count;
+                return n;
+            }
+            return _ctx.Config.GetRoleCount(role);
+        }
+
+        /// <summary>Dead players whose role was revealed as <paramref name="role"/>.</summary>
+        public int RevealedDeadCount(Role role)
+        {
+            int n = 0;
+            foreach (var p in _ctx.State.Players)
+                if (!p.Alive && p.RoleRevealed && p.Role == role) n++;
+            return n;
+        }
+
+        /// <summary>Living players who may still hold <paramref name="role"/> (configured minus revealed dead).</summary>
+        public int AliveRoleCount(Role role) => ConfiguredRoleCount(role) - RevealedDeadCount(role);
 
         public int CountInHand(string cardId)
         {
