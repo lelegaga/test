@@ -138,6 +138,20 @@ namespace Sanguo.Tests
         }
 
         [Test]
+        public void InviteCodeOnlyDecodesLanAddresses()
+        {
+            foreach (var lan in new[] { "192.168.43.1", "10.0.0.7", "172.20.10.2", "127.0.0.1", "169.254.3.4", "100.72.1.9" })
+            {
+                string code = InviteCode.Encode(IPAddress.Parse(lan), ProtocolInfo.DefaultGamePort);
+                Assert.That(InviteCode.TryDecode(code, out var back, out _), Is.True, lan);
+                Assert.That(back.ToString(), Is.EqualTo(lan));
+            }
+            string wan = InviteCode.Encode(IPAddress.Parse("8.8.8.8"), ProtocolInfo.DefaultGamePort);
+            Assert.That(InviteCode.TryDecode(wan, out _, out _), Is.False, "not a LAN host");
+            Assert.That(InviteCode.TryDecode("not-a-code", out _, out _), Is.False, "typo-like input is rejected");
+        }
+
+        [Test]
         public void CommandsRoundTrip()
         {
             var commands = new GameCommand[]

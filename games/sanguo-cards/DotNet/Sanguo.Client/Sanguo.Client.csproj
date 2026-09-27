@@ -11,6 +11,14 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="UnityEngine.Modules" Version="2021.3.33" PrivateAssets="all" ExcludeAssets="runtime" />
+    <!-- UGUI (UnityEngine.UI) is a Unity package, not a module: download it and reference the DLL directly. -->
+    <PackageDownload Include="Unity3D.UnityEngine.UI" Version="[2020.3.21]" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(NuGetPackageRoot)unity3d.unityengine.ui/2020.3.21/lib/UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Sanguo.Core\Sanguo.Core.csproj" />
@@ -18,5 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(UnityAssets)Scripts\App\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\UI\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\Audio\**\*.cs" />
   </ItemGroup>
 </Project>

@@ -49,8 +49,8 @@
 
 | 程序集 | 位置 | 说明 |
 | --- | --- | --- |
-| `Sanguo.Core` | `Scripts/Core/Sanguo.Core.asmdef`，其余核心目录通过 `.asmref` 并入 | 规则内核，`noEngineReferences: true` |
-| `Sanguo.Client` | `Scripts/App/Sanguo.Client.asmdef` | Unity 层：GameManager、内容加载、（阶段 8）UI/音频/存档 |
+| `Sanguo.Core` | `Scripts/Core/Sanguo.Core.asmdef`，其余核心目录（含 `Presentation/`、`Save/`）通过 `.asmref` 并入 | 规则内核与无引擎依赖的表现逻辑，`noEngineReferences: true` |
+| `Sanguo.Client` | `Scripts/App/Sanguo.Client.asmdef`，`UI/`、`Audio/` 通过 `.asmref` 并入 | Unity 层：GameManager、网络管理、UI、音频 |
 | `Sanguo.Network` | `Scripts/Network/Sanguo.Network.asmdef` | 纯 C# 网络层（`noEngineReferences: true`） |
 | `Sanguo.Editor` | `Editor/Sanguo.Editor.asmdef` | 编辑器：项目设置、打包、iOS plist 后处理 |
 | `Sanguo.Tests.EditMode` | `Tests/EditMode/` | 编辑器测试，同时可由 `DotNet/Sanguo.Tests` 在 .NET 下运行 |
@@ -73,9 +73,13 @@ games/sanguo-cards/                  Unity 工程根目录
 │   │   ├── AI/          PlayerPerspective、HeuristicAI、AIActionEvaluator、技能顾问、AIController
 │   │   ├── Data/        JsonValue、GameContent、ContentLoader、内容来源
 │   │   ├── Utils/       确定性随机数、时钟、对象池
-│   │   ├── App/         （Unity）GameManager、Resources 内容加载、调试对局视图
+│   │   ├── App/         （Unity）GameManager、NetworkManager、ProfileService、Resources 内容加载、平台适配
 │   │   ├── Network/     协议/编解码(Protocol)、序列化、传输(Transport)、房间(Rooms)、服务器(Server)、客户端(Client)、发现(Discovery)
-│   │   ├── UI/ Save/ Audio/（阶段 8）
+│   │   ├── Presentation/ InteractionModel（点选→意图命令）、SeatLayout、LogFeed、CardText（纯 C#，可测试）
+│   │   ├── Save/        PlayerProfile、ProfileStore（原子写入的 JSON 存档）
+│   │   ├── UI/          Core/（主题、UIFactory、UIRoot、安全区、补间、对象池、长按）、Screens/（菜单、单机、设置、
+│   │   │                局域网大厅、房间、设置表单）、Game/（牌桌、座位、手牌、对话框、动画导演、IGameView）
+│   │   ├── Audio/       AudioManager（程序合成音效，订阅事件）
 │   ├── Editor/          项目设置、打包脚本、iOS Info.plist 后处理
 │   ├── Plugins/Android/ SanguoNetwork.androidlib（局域网权限）
 │   ├── Resources/Data/  cards.json · skills.json · characters.json
@@ -204,7 +208,10 @@ WaitingResponse：覆盖状态，有响应请求打开时生效，关闭后回�
 - 断线重连：座位保留，客户端带 `RoomID + 座位 + ReconnectToken` 自动重连（指数退避），服务器校验后发送快照与最后接受的命令序号；
   断线超过 `DisconnectAITakeoverMs` 由 AI 托管，重连后收回控制权。AI 代打的命令走主机内部通道，不占用玩家的命令序号。
 - 房间发现：房主每秒向受限广播地址与各网卡定向广播地址发送 UDP 公告（端口 47777），浏览端以包源地址为准、3.5 秒过期；
-  **邀请码**把房主 IPv4 + 端口编码为 8 位（如 `C1M0-G1A5`），广播被屏蔽时可直接输入。
+  **邀请码**把房主 IPv4 + 端口编码为 8 位（如 `C1M0-G1A5`），广播被屏蔽时可直接输入；解码只接受局域网地址（私有网段、回环、
+  链路本地、运营商 NAT），多数输错的码会直接提示无效。
+- 本机编排：`LanController`（纯 C#）负责“浏览 / 建房并以房主身份经回环加入 / 加入他人房间 / 离开”，切换房间会先停止自己的服务器，
+  并按需持有 Android 组播锁；Unity 的 `NetworkManager` 只做每帧驱动与前后台切换转发。
 - 平台：Android 通过 `Plugins/Android/SanguoNetwork.androidlib` 合并 `INTERNET`、`ACCESS_NETWORK_STATE`、`ACCESS_WIFI_STATE`、
   `CHANGE_WIFI_MULTICAST_STATE` 权限，浏览/建房时持有 `MulticastLock`；iOS 打包后自动写入 `NSLocalNetworkUsageDescription`
   与 `NSBonjourServices`。iOS 14.5+ 收发 UDP 广播需要 Apple 审批的 multicast entitlement，因此 iOS 端以邀请码/手动 IP 为主，
@@ -222,12 +229,35 @@ AIController → PlayerPerspective（只含该玩家可知信息）
 只根据本座位收到的公开事件（谁攻击/救助了谁、阵亡翻开的身份）估计每名角色对主公的“亲疏度”，再结合自己的秘密身份
 换算敌友（反贼视主公为敌、内奸在反贼未清前保护主公等）。
 
-## 15. UI 规划（阶段 8）
+## 15. UI（阶段 8）
 
-横屏 1920×1080 参考分辨率（CanvasScaler，按高度匹配），`SafeArea` 适配。
-布局：中央牌桌、底部本人角色/体力/技能/手牌、左侧日志、右侧按钮（出牌/取消/确定/结束出牌）、上方其他玩家。
-10v10：当前行动者与本人重点显示，邻近玩家中等头像，远端玩家小头像，横向滑动查看全部；头像、卡牌、飘字全部走对象池。
-动画只消费事件，逻辑永不等待动画。
+**原则**：UI 只读 `ClientGameState`（表现层副本），只发送意图命令；任何可选项都来自服务器请求里的私有提示
+（`PlayHints`/`SkillHints`/`Candidates`/`Options`），所以 UI 里没有规则代码，服务器仍会校验一切。
+
+```
+IGameView（LocalGameView：进程内 GameSession │ NetworkGameView：GameClient）
+    │ State（ClientGameState） Events（投影后的事件） Send(GameCommand) SetAutoPlay Leave
+    ▼
+GameScreen ──Refresh──▶ InteractionModel（纯 C#）：模式判定、可选/已选、可确定/可跳过、提示语、构建命令
+    │                    └─ 点卡牌/点座位/点技能/确定/不出/取消/结束出牌 → PlayCard/UseSkill/Respond/SelectTarget/EndTurn
+    ├─ SeatStrip / SeatWidget   其他玩家（SeatLayout：大/中/小三档，上家在左、下家在右，超宽时横向滑动）
+    ├─ SelfPanel               本人武将、身份、体力、装备、判定区、技能按钮（锁/限/主公标记，可用高亮）
+    ├─ HandView                手牌（重叠排布、选中抬起、不可用变暗、平滑移动、对象池）
+    ├─ 中央牌桌                处理区 + 最近弃牌、牌堆数、提示语、倒计时条、战报（LogFeed + GameLogFormatter）
+    ├─ 对话框                  选将、选项、从他人区域选牌（手牌背面按位置选）、结算、说明、菜单（托管/战报/退出）
+    └─ AnimationDirector       飞牌、伤害/回复/技能飘字、命中光圈、横幅（只消费事件，逻辑从不等待；有并发上限）
+```
+
+- **界面**：主菜单 → 单机（`ConfigForm`：模式/人数/身份数量/选将/出牌时间/分队/队长/胜利条件）→ 牌桌；
+  局域网大厅（UDP 房间列表、创建房间、IP 或邀请码加入、观战）→ 房间（座位、准备、开始、踢人、转让房主、换队、
+  聊天、房间设置对话框）→ 牌桌；设置（昵称、头像、音乐/音效音量、画质，写入存档）。
+- **适配**：横屏 1920×1080 参考分辨率，`CanvasScaler` 按高度匹配（宽屏手机文字不缩小），`SafeAreaFitter`
+  避开刘海/挖孔/圆角/Home 条；触屏友好：◀ ▶ 步进器替代下拉框，长按（`PressHandler`）查看卡牌/技能/角色说明。
+- **资源**：中文字体取自系统（`Font.CreateDynamicFontFromOSFont`，按平台候选列表），圆角/圆形精灵与音效
+  均在运行时生成，工程中没有任何受版权保护的美术或音频文件；之后可替换为授权素材。
+- **刷新策略**：仅在收到事件、状态被快照替换或交互模型版本变化时刷新控件；空闲牌桌每帧只更新倒计时条。
+- **倒计时**：客户端记录每个请求首次出现的本地时间，按房间配置的超时时长显示（不依赖主机时钟）。
+- **LAN 连接状态**：重连中显示提示（主机侧由 AI 暂代），彻底断开时弹窗返回大厅；游戏结束后回到房间可再开一局。
 
 ## 16. 性能
 

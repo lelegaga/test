@@ -54,6 +54,17 @@ namespace Sanguo.Network
             return b[0] == 10 || (b[0] == 172 && b[1] >= 16 && b[1] <= 31) || (b[0] == 192 && b[1] == 168);
         }
 
+        /// <summary>
+        /// Addresses a LAN host can have: private ranges, loopback, link-local and carrier-grade NAT
+        /// (used by some phone hotspots).
+        /// </summary>
+        public static bool IsLanAddress(IPAddress a)
+        {
+            if (a == null || a.AddressFamily != AddressFamily.InterNetwork) return false;
+            var b = a.GetAddressBytes();
+            return IsPrivate(a) || b[0] == 127 || (b[0] == 169 && b[1] == 254) || (b[0] == 100 && b[1] >= 64 && b[1] <= 127);
+        }
+
         /// <summary>Limited broadcast plus the directed broadcast address of every IPv4 interface.</summary>
         public static List<IPEndPoint> BroadcastTargets(int port)
         {

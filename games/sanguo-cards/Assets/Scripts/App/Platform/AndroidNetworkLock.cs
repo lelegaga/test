@@ -8,7 +8,7 @@ namespace Sanguo.App
     /// CHANGE_WIFI_MULTICAST_STATE permission (declared in Plugins/Android/SanguoNetwork.androidlib).
     /// No-op on other platforms.
     /// </summary>
-    public sealed class AndroidNetworkLock
+    public sealed class AndroidNetworkLock : Sanguo.Network.INetworkLock
     {
 #if UNITY_ANDROID && !UNITY_EDITOR
         private AndroidJavaObject _multicastLock;

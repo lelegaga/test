@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Sanguo.Characters;
 using Sanguo.Core;
@@ -104,6 +105,12 @@ namespace Sanguo.Game
             var group = _groups[_groupIndex];
             if (config.CharacterSelection != CharacterSelectionMode.None)
             {
+                // Share what is left of the roster fairly: on big tables every player of the group
+                // gets fewer options instead of the last seats getting none.
+                int needing = 0;
+                foreach (var p in group)
+                    if (!_chosen.ContainsKey(p.PlayerId)) needing++;
+                int fairShare = needing > 0 ? Math.Max(1, RemainingInPool() / needing) : 1;
                 foreach (var p in group)
                 {
                     if (_chosen.ContainsKey(p.PlayerId)) continue;
@@ -113,7 +120,7 @@ namespace Sanguo.Game
                         if (c != null) _chosen[p.PlayerId] = c;
                         continue;
                     }
-                    int count = ctx.Mode.GetCharacterChoiceCount(ctx.State, p, config.CharacterChoices);
+                    int count = Math.Min(ctx.Mode.GetCharacterChoiceCount(ctx.State, p, config.CharacterChoices), fairShare);
                     var options = new List<string>();
                     for (int k = 0; k < count; k++)
                     {
@@ -151,6 +158,14 @@ namespace Sanguo.Game
             ctx.Random.Shuffle(rest);
             _pool = rest;
             _poolIndex = 0;
+        }
+
+        private int RemainingInPool()
+        {
+            int n = 0;
+            for (int i = _poolIndex; i < _pool.Count; i++)
+                if (!IsAlreadyChosen(_pool[i])) n++;
+            return n;
         }
 
         private CharacterData NextFromPool()

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
 using Sanguo.Data;
 using Sanguo.GameModes;
@@ -37,15 +38,18 @@ namespace Sanguo.Network
         private readonly GameModeRegistry _modes;
         private readonly IClock _clock;
         private readonly int _discoveryPort;
+        private readonly bool _discovery;
         private LanRoomBrowser _browser;
         private LanRoomAnnouncer _announcer;
         private LanGameServer _server;
         private string _address = string.Empty;
         private IReadOnlyList<RoomInfo> _rooms = Array.Empty<RoomInfo>();
 
+        /// <param name="enableDiscovery">False skips the UDP browser/announcer (tests, direct-IP-only builds).</param>
         public LanRoomService(INetworkTransport transport, GameContent content, GameModeRegistry modes, IClock clock,
-            int discoveryPort = ProtocolInfo.DiscoveryPort)
+            int discoveryPort = ProtocolInfo.DiscoveryPort, bool enableDiscovery = true)
         {
+            _discovery = enableDiscovery;
             _transport = transport;
             _content = content;
             _modes = modes;
@@ -61,7 +65,7 @@ namespace Sanguo.Network
 
         public void StartBrowsing()
         {
-            if (_browser != null) return;
+            if (_browser != null || !_discovery) return;
             try
             {
                 _browser = new LanRoomBrowser(_discoveryPort);
@@ -98,12 +102,15 @@ namespace Sanguo.Network
                 }
             }
             if (last != null) throw last;
-            var ip = LocalNetwork.GetLanIPv4();
+            // Without Wi-Fi there is no LAN address: the room still works on this device (and its
+            // invite code resolves to loopback), and the UI tells the player to connect.
+            var ip = LocalNetwork.GetLanIPv4() ?? IPAddress.Loopback;
+            if (IPAddress.IsLoopback(ip)) DiscoveryError = "未连接局域网";
             _address = ip.ToString();
             _server.SetInviteCode(InviteCode.Encode(ip, _server.Port));
             try
             {
-                _announcer = new LanRoomAnnouncer(_discoveryPort);
+                if (_discovery) _announcer = new LanRoomAnnouncer(_discoveryPort);
             }
             catch (SocketException ex)
             {

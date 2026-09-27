@@ -20,5 +20,7 @@
     <Compile Include="$(UnityAssets)Scripts\AI\**\*.cs" />
     <Compile Include="$(UnityAssets)Scripts\Data\**\*.cs" />
     <Compile Include="$(UnityAssets)Scripts\Utils\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\Presentation\**\*.cs" />
+    <Compile Include="$(UnityAssets)Scripts\Save\**\*.cs" />
   </ItemGroup>
 </Project>

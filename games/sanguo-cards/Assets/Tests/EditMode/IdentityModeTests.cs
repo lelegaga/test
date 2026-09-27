@@ -125,6 +125,33 @@ namespace Sanguo.Tests
             Assert.That(all.Distinct().Count(), Is.EqualTo(5));
         }
 
+        [Test]
+        public void BigTablesShareTheRosterSoEveryoneChooses()
+        {
+            var roles = new[] { Role.Lord, Role.Loyalist, Role.Loyalist, Role.Rebel, Role.Rebel, Role.Rebel, Role.Rebel, Role.Renegade };
+            var setups = roles.Select((r, i) => new PlayerSetup("P" + i) { Role = r }).ToList();
+            var s = Scenario.Create(8, c =>
+            {
+                c.ModeId = IdentityMode.Id;
+                c.CharacterSelection = CharacterSelectionMode.Choose;
+            }, mode: c => new IdentityMode(c), setups: setups);
+            int roster = s.Ctx.Content.Characters.All.Count(ch => ch.Id != s.Ctx.Config.DefaultCharacterId);
+            s.ExpectRequest<ChooseCharacterRequest>(0);
+            s.Submit(new RespondCommand { PlayerId = 0, OptionIndex = 0 });
+            int expected = System.Math.Min(3, (roster - 1) / 7);
+            Assert.That(expected, Is.GreaterThanOrEqualTo(1), "test content has enough characters");
+            var offered = new List<string>();
+            for (int i = 1; i < 8; i++)
+            {
+                var r = s.ExpectRequest<ChooseCharacterRequest>(i);
+                Assert.That(r.CharacterIds, Has.Count.EqualTo(expected), "seat " + i + " gets a fair share of the remaining roster");
+                offered.AddRange(r.CharacterIds);
+            }
+            Assert.That(offered.Distinct().Count(), Is.EqualTo(offered.Count), "no character is offered twice");
+            for (int i = 1; i < 8; i++) s.Submit(new RespondCommand { PlayerId = i, OptionIndex = 0 });
+            Assert.That(s.State.Players.All(p => p.Character.Id != s.Ctx.Config.DefaultCharacterId), Is.True, "nobody is left with the default character");
+        }
+
         private static void Kill(Scenario s, int killer, int victim) => TestKills.Kill(s, killer, victim);
 
         [Test]

@@ -58,7 +58,11 @@ namespace Sanguo.Network
                 ip[i] = (byte)(value & 0xFF);
                 value >>= 8;
             }
-            address = new IPAddress(ip);
+            // 8 characters carry no checksum, so reject anything that cannot be a LAN host; this turns
+            // most typos into "invalid code" instead of a connection attempt to a random address.
+            var decoded = new IPAddress(ip);
+            if (!LocalNetwork.IsLanAddress(decoded)) return false;
+            address = decoded;
             port = ProtocolInfo.DefaultGamePort + offset;
             return true;
         }
